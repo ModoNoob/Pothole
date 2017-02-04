@@ -25,7 +25,8 @@ public class MapsActivitySimpleTest extends FragmentActivity implements OnMapRea
 
     private GoogleMap mMap;
     private LocationManager locationManager;
-    private LocationListener locationListener
+    private LocationListener locationListener;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
