@@ -12,5 +12,5 @@ public class Pothole implements Serializable {
 
     public String picture;
 
-    public long UnixTimeStamp;
+    public long unixTimeStamp;
 }
