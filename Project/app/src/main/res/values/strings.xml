@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">PotholeFinder</string>
+<<<<<<< HEAD
+    <string name="title_activity_my_scene_unityandroidcharles">MySceneUNITYANDROIDCHARLESActivity
+    </string>
+    <string name="title_activity_maps_simple_test">Map</string>
+=======
     <string name="takePicture">take picture</string>
+>>>>>>> 19873766653537a1bfd9faacf6856bf32c16184d
 </resources>
