@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">PotholeFinder</string>
+    <string name="takePicture">take picture</string>
 </resources>
