@@ -327,8 +327,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mClusterManager.setOnClusterItemClickListener(new ClusterManager.OnClusterItemClickListener<Pothole>() {
             @Override
             public boolean onClusterItemClick(Pothole item) {
-                Log.d("shit", Double.toString(item.latitude));
 
+                if (item.picturePath == "")
+                    return false;
                 LayoutInflater inflater = getLayoutInflater();
                 View imageDialog = inflater.inflate(R.layout.dialog_image, null);
                 Dialog dialog = new Dialog(MapActivity.this);
@@ -338,12 +339,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
 
                 ImageView image = (ImageView) imageDialog.findViewById(R.id.image);
-                // Set your image
 
                 Uri uri = Uri.parse(item.picturePath);
-
                 image.setImageURI(uri);
-                Log.d("shit", Double.toString(item.longitude));
 
                 dialog.show();
                 return false;
