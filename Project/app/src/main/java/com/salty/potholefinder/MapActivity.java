@@ -2,6 +2,7 @@ package com.salty.potholefinder;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
@@ -11,6 +12,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -19,6 +21,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -312,11 +315,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 .createPothole());
     }
 
-    private double randomLatitude() {
-        double latitudeMin = 45.4402;
-        double latitudeMax = 45.5248;
-        return randomDouble(latitudeMin, latitudeMax);
-    }
+
 
     //Use this to open the camera app and take a picturePath
     @Override
@@ -372,9 +371,15 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     private double randomLongitude(){
-        double longitudeMin = -73.715;
-        double longitudeMax = -73.564;
+        double longitudeMin = -74;
+        double longitudeMax = -73;
         return randomDouble(longitudeMin, longitudeMax);
+    }
+
+    private double randomLatitude() {
+        double latitudeMin = 45;
+        double latitudeMax = 46;
+        return randomDouble(latitudeMin, latitudeMax);
     }
 
     private double randomDouble(double min, double max){

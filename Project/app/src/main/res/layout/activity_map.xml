@@ -21,12 +21,14 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
             android:layout_margin="@dimen/fab_margin"
-            android:src="@drawable/pothole_icon_white"
             android:id="@+id/fab"
-            android:backgroundTint="#c90a00"
+            android:src="@drawable/pothole_icon_white"
+            app:backgroundTint="#c90a00"
             app:layout_anchor="@+id/map_fragment"
             app:layout_anchorGravity="bottom|right|end"
-            app:fabSize="normal"/>
+            app:fabSize="normal"        />
+
+
 
         <include layout="@layout/framelayout_fab" />
 
