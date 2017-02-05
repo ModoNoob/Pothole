@@ -18,9 +18,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".MainActivity"></activity>
-        <activity android:name=".CameraActivity"></activity>
-        <activity android:name=".LouisEstNiceActivity"></activity>
         <activity android:name=".MapActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
