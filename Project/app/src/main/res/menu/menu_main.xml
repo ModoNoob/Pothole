@@ -1,0 +1,15 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.example.islan.mytest.MainActivity">
+    <item
+        android:id="@+id/action_heatmap"
+        android:orderInCategory="100"
+        android:title="HeatMap"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_cluster"
+        android:orderInCategory="100"
+        android:title="Cluster"
+        app:showAsAction="never" />
+</menu>
