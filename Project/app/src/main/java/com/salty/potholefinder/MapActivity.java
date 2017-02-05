@@ -147,8 +147,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 addEffects();
                 return true;
             case R.id.action_cluster:
-                item.setChecked(!item.isChecked());
                 IsClusterActive = !IsClusterActive;
+                item.setChecked(IsClusterActive);
                 addEffects();
                 return true;
             case R.id.data_insert:
