@@ -270,10 +270,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         return image;
     }
 
-    private void fabOnClick(View v){
-        Toast.makeText(this, "WOW", Toast.LENGTH_LONG).show();
-    }
-
     private void AddRandomPothole(List<Pothole> potholes){
         potholes.add(new PotholeBuilder()
                 .withPotholeID(UUID.randomUUID().toString())
