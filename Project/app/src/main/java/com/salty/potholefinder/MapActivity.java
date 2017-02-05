@@ -27,7 +27,6 @@ import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.util.Log;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -37,9 +36,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.TileOverlayOptions;
-import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.heatmaps.HeatmapTileProvider;
 import com.salty.potholefinder.data.FileSystemRepository;
@@ -68,7 +65,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private LocationManager locationManager;
     private FloatingActionButton fab;
     private boolean fabMenuIsOpen = false;
-    private LatLng mCurrentLatLng;
 
     private Menu mMenu;
 
@@ -78,15 +74,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private Location lastLocation;
 
-    private Context context;
-
     Random r = new Random();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
-        context = this.getBaseContext();
 
         if (googleApiClient == null) {
             googleApiClient = new GoogleApiClient.Builder(this)
@@ -129,8 +122,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     createAndSavePothole(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()));
                     addEffects(false);
                 }
-
-                Toast.makeText(getApplicationContext(), "Current position: " + lastLocation.getLatitude() + ", " + lastLocation.getLongitude(), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -148,7 +139,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
 
         mMenu = menu;
@@ -246,8 +236,18 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            try {
+                if (ActivityCompat.checkSelfPermission(MapActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                        ActivityCompat.checkSelfPermission(MapActivity.this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.INTERNET}, 10);
+                }
+                lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+            } catch (SecurityException e) {
+                e.printStackTrace();
+            }
+
             if(Globals.isDataInsertCameraActive){
-                createAndSavePothole(mCurrentLatLng, mCurrentPicturePath);
+                createAndSavePothole(Globals.currentLatLnt, mCurrentPicturePath);
             }
             else if(Globals.isDataInsertActive){
                 createAndSavePotholeLastLocationWithoutPicture();
@@ -255,11 +255,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             else{
                 createAndSavePotholeLastLocationWithPicture();
             }
+
             addEffects(false);
-            //Gets the bitmap and display in a ImageView
-            //Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPicturePath);
-            //ImageView mImageView = (ImageView)findViewById(R.id.activity_camera_imageview);
-            //mImageView.setImageBitmap(bitmap);
         }
     }
 
@@ -276,7 +273,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     addEffects(false);
                 }
                 else if(Globals.isDataInsertCameraActive){
-                    mCurrentLatLng = latLng;
+                    Globals.currentLatLnt = latLng;
                     dispatchTakePictureIntent();
                     addEffects(false);
                 }
@@ -310,22 +307,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             mMap.clear();
         }
 
-        // (Activity extends context, so we can pass 'this' in the constructor.)
         mClusterManager = new ClusterManager<Pothole>(this, mMap);
 
-        // Point the map's listeners at the listeners implemented by the cluster
-        // manager.
         mMap.setOnCameraIdleListener(mClusterManager);
         mMap.setOnMarkerClickListener(mClusterManager);
 
         mClusterManager.setRenderer(new PotholeRenderer(getApplicationContext(), mMap, mClusterManager));
-        mClusterManager.setOnClusterClickListener(new ClusterManager.OnClusterClickListener<Pothole>() {
-            @Override
-            public boolean onClusterClick(Cluster<Pothole> cluster) {
-                Log.d("shit", "cluster is clicked");
-                return false;
-            }
-        });
 
         mClusterManager.setOnClusterItemClickListener(new ClusterManager.OnClusterItemClickListener<Pothole>() {
             @Override
@@ -377,31 +364,25 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         if (list.size() == 0)
             return;
 
-        // Create a heat map tile provider, passing it the latlngs of the police stations.
         if(Globals.isHeatMapActive){
             HeatmapTileProvider mProvider = new HeatmapTileProvider.Builder()
                     .data(list)
                     .build();
-            // Add a tile overlay to the map, using the heat map tile provider.
+
             mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider));
         }
     }
 
-    //Use this to open the camera app and take a picture
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        // Ensure that there's a camera activity to handle the intent
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            // Create the File where the photo should go
             File imageFile = null;
             try {
                 imageFile = createImageFile();
             } catch (IOException ex) {
-                // Error occurred while creating the File
                 Log.e("ERROR", ex.getMessage());
             }
 
-            // Continue only if the File was successfully created
             if (imageFile != null) {
                 Uri imageURI = FileProvider.getUriForFile(this, "com.salty.potholefinder.fileprovider", imageFile);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageURI);
@@ -411,7 +392,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
-    //Use this to open the camera app and take a picturePath
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
@@ -463,10 +443,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         fabMenuIsOpen = !fabMenuIsOpen;
     }
 
-    //creates a file with a valid path that will then be used if
-    //the camera returns an image
     private File createImageFile() throws IOException {
-        // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
@@ -476,7 +453,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 storageDir      /* directory */
         );
 
-        // Save a file: path for use with ACTION_VIEW intents
         mCurrentPicturePath = image.getAbsolutePath();
         return image;
     }
