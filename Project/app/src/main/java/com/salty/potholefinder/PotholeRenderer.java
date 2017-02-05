@@ -22,10 +22,6 @@ import com.salty.potholefinder.model.Pothole;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by islan on 2/5/2017.
- */
-
 public class PotholeRenderer extends DefaultClusterRenderer<Pothole> {
 
     private final IconGenerator mIconGenerator;
