@@ -172,7 +172,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
             Pothole pothole = new PotholeBuilder()
                     .withPotholeID(UUID.randomUUID().toString())
-                    .withLatittude(lastLocation.getLatitude())
+                    .withLatitude(lastLocation.getLatitude())
                     .withLongitude(lastLocation.getLongitude())
                     .withPicturePath(mCurrentPicturePath)
                     .withUnixTimeStamp(new Date().getTime())
