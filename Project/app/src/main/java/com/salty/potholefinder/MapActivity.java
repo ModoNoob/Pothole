@@ -510,7 +510,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 .withLongitude(longitude)
                 .withPicturePath("")
                 .withUnixTimeStamp(new Date().getTime())
-                .createPothole();
+                .createPothole());
     }
 
     private void addRandomPothole(List<Pothole> potholes){
