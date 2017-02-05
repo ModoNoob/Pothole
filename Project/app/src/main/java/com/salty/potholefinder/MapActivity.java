@@ -270,7 +270,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         return image;
     }
 
-    private void AddRandomPothole(ArrayList<Pothole> potholes){
+    private void AddRandomPothole(List<Pothole> potholes){
         potholes.add(new PotholeBuilder()
                 .withPotholeID(UUID.randomUUID().toString())
                 .withLatittude(randomLatitude())
