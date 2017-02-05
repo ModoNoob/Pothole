@@ -287,10 +287,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         return image;
     }
 
-    private void fabOnClick(View v){
-        Toast.makeText(this, "WOW", Toast.LENGTH_LONG).show();
-    }
-
     private void AddRandomPothole(ArrayList<Pothole> potholes){
         potholes.add(new PotholeBuilder()
                 .withPotholeID(UUID.randomUUID().toString())
@@ -306,7 +302,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         double latitudeMax = 45.5248;
         return randomDouble(latitudeMin, latitudeMax);
     }
-    
+
     private void fabOnClick(View v){
 
         FloatingActionButton fabLocation = (FloatingActionButton) this.findViewById(R.id.fab_location);
@@ -329,7 +325,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             fabCamera.startAnimation(hideFabCamera);
         }
         else{
-            fab.setImageDrawable(getResources().getDrawable(R.drawable.mr_ic_close_dark));
+            fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_close_white_48dp));
 
             Animation showFabLocation = AnimationUtils.loadAnimation(getApplication(), R.anim.fab_location_show);
             fabLocationParams.bottomMargin += (int) (fabLocation.getHeight() * 1.3);
