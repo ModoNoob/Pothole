@@ -115,7 +115,7 @@ public class MapActivity extends AppCompatActivity {
         Toast.makeText(this, "WOW", Toast.LENGTH_LONG).show();
     }
 
-    private void AddDemoPothole(ArrayList<Pothole> potholes){
+    private void AddRandomPothole(ArrayList<Pothole> potholes){
         potholes.add(new PotholeBuilder()
                 .withPotholeID(UUID.randomUUID().toString())
                 .withLatittude(randomLatitude())
