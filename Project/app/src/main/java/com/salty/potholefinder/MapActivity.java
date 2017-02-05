@@ -122,7 +122,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                         mMap.animateCamera(CameraUpdateFactory.zoomTo(15f), 1000, null);
                     mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude())), 1000, null);
                     createAndSavePothole(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()));
-                    addEffects(false);
+                    addEffects();
                 }
             }
         });
@@ -160,12 +160,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             case R.id.action_heatmap:
                 Globals.isHeatMapActive = !Globals.isHeatMapActive;
                 item.setChecked(Globals.isHeatMapActive);
-                addEffects(true);
+                addEffects();
                 return true;
             case R.id.action_cluster:
                 Globals.isClusterActive = !Globals.isClusterActive;
                 item.setChecked(Globals.isClusterActive);
-                addEffects(true);
+                addEffects();
                 return true;
             case R.id.data_insert:
                 Globals.isDataInsertActive = !Globals.isDataInsertActive;
@@ -187,7 +187,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                addEffects(true);
+                addEffects();
                 return true;
 
             default:
@@ -248,7 +248,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 createAndSavePotholeLastLocationWithPicture();
             }
 
-            addEffects(false);
+            addEffects();
         }
     }
 
@@ -262,12 +262,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 if (Globals.isDataInsertActive)
                 {
                     createAndSavePothole(latLng, "");
-                    addEffects(false);
+                    addEffects();
                 }
                 else if(Globals.isDataInsertCameraActive){
                     currentLatLnt = latLng;
                     dispatchTakePictureIntent();
-                    addEffects(false);
+                    addEffects();
                 }
             }
         });
@@ -280,7 +280,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         mMap.getUiSettings().setMapToolbarEnabled(false);
 
-        addEffects(false);
+        addEffects();
     }
 
     @Override
@@ -294,10 +294,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
-    private void addEffects(boolean clearMap) {
-        if(clearMap){
-            mMap.clear();
-        }
+    private void addEffects() {
+        mMap.clear();
 
         mClusterManager = new ClusterManager<Pothole>(this, mMap);
 
