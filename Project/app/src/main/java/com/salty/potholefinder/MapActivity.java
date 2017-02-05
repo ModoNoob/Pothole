@@ -135,12 +135,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.action_heatmap:
-                break;
+                return true;
             case R.id.action_cluster:
-                break;
+                return true;
             case R.id.data_insert:
-
-                break;
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
