@@ -405,6 +405,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             if (imageFile != null) {
                 Uri imageURI = FileProvider.getUriForFile(this, "com.salty.potholefinder.fileprovider", imageFile);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageURI);
+
                 startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
             }
         }
