@@ -22,8 +22,9 @@
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_gravity="bottom|end"
-            android:layout_margin="24dp"
+            android:layout_margin="@dimen/fab_margin"
             android:src="@drawable/pothole_icon_white"
+            android:id="@+id/fab"
             app:layout_anchor="@+id/map_fragment"
             app:layout_anchorGravity="bottom|right|end"
             app:fabSize="normal"/>
