@@ -22,10 +22,6 @@ import com.salty.potholefinder.model.Pothole;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by islan on 2/5/2017.
- */
-
 public class PotholeRenderer extends DefaultClusterRenderer<Pothole> {
 
     private final IconGenerator mIconGenerator;
@@ -58,7 +54,7 @@ public class PotholeRenderer extends DefaultClusterRenderer<Pothole> {
     protected void onBeforeClusterItemRendered(Pothole pothole, MarkerOptions markerOptions) {
         // Draw a single person.
         // Set the info window to show their name.
-        if(pothole.picturePath == null || pothole.picturePath == "")
+        if(pothole.picturePath == null || pothole.picturePath.equals(""))
         {
             super.onBeforeClusterItemRendered(pothole, markerOptions);
             return;

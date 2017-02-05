@@ -41,7 +41,6 @@ import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.heatmaps.HeatmapTileProvider;
-import com.ortiz.touch.TouchImageView;
 import com.salty.potholefinder.data.FileSystemRepository;
 import com.salty.potholefinder.model.Pothole;
 import com.salty.potholefinder.model.PotholeBuilder;
@@ -242,6 +241,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 createAndSavePothole(mCurrentLatLng, mCurrentPicturePath);
             }
             else if(Globals.isDataInsertActive){
+                createAndSavePotholeLastLocationWithoutPicture();
+            }
+            else{
                 createAndSavePotholeLastLocationWithPicture();
             }
             addEffects();
@@ -261,7 +263,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             public void onMapClick(LatLng latLng) {
                 if (Globals.isDataInsertActive)
                 {
-                    createAndSavePothole(latLng);
+                    createAndSavePothole(latLng, "");
                     addEffects();
                 }
                 else if(Globals.isDataInsertCameraActive){
@@ -562,6 +564,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private void createAndSavePotholeLastLocationWithPicture(){
         LatLng latLng = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
         createAndSavePothole(latLng, mCurrentPicturePath);
+    }
+
+    private void createAndSavePotholeLastLocationWithoutPicture(){
+        LatLng latLng = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
+        createAndSavePothole(latLng, "");
     }
 
     private Pothole addPothole(double latitude, double longitude){
