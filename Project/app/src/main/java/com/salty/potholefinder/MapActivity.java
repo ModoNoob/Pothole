@@ -301,10 +301,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 .createPothole());
     }
 
-    private double randomLatitude(){
+    private double randomLatitude() {
         double latitudeMin = 45.4402;
         double latitudeMax = 45.5248;
         return randomDouble(latitudeMin, latitudeMax);
+    }
+    
     private void fabOnClick(View v){
 
         FloatingActionButton fabLocation = (FloatingActionButton) this.findViewById(R.id.fab_location);
