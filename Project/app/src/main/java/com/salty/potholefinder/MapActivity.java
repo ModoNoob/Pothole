@@ -64,8 +64,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private String mCurrentPicturePath;
     private GoogleMap mMap;
-    private LocationManager locationManager;
     private GoogleApiClient googleApiClient;
+    private LocationManager locationManager;
     private FloatingActionButton fab;
     private boolean fabMenuIsOpen = false;
     private LatLng mCurrentLatLng;
@@ -113,6 +113,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             public void onClick(View v) {
                 fabOnClick(v);
                 try {
+                    if (ActivityCompat.checkSelfPermission(MapActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                        ActivityCompat.checkSelfPermission(MapActivity.this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.INTERNET}, 10);
+                    }
                     lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
                 } catch (SecurityException e) {
                     e.printStackTrace();
@@ -202,6 +206,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         try {
+            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.INTERNET}, 10);
+            }
             lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
         } catch (SecurityException e) {
             e.printStackTrace();
@@ -284,16 +292,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mMap.getUiSettings().setMapToolbarEnabled(false);
 
         addEffects(false);
-
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-        ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.INTERNET}, 10);
-            return;
-        }
-        else
-        {
-            locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        }
     }
 
     @Override
@@ -373,6 +371,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 }
             }
         }
+
+        mClusterManager.cluster();
 
         if (list.size() == 0)
             return;
