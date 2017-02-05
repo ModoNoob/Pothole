@@ -21,10 +21,19 @@ public class LouisEstNiceActivity extends AppCompatActivity {
 
         String uuid = UUID.randomUUID().toString();
 
-        Log.d("FileSystemRepository", "Saving file...");
+        repository.deleteAll();
+
         repository.save(uuid, "Hello!");
+        Log.d("FileSystemRepository", "Saving file...");
 
         String savedStuff = repository.get(uuid);
         Log.d("FileSystemRepository", "Reading file... " + savedStuff);
+
+        repository.delete(uuid);
+        Log.d("FileSystemRepository", "Deleting file...");
+
+        for(String s : repository.getAll())
+            if (s != null)
+                Log.d("FileSystemRepository", s);
     }
 }

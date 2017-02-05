@@ -62,10 +62,29 @@ public class FileSystemRepository<T> {
         File[] files = filesDirectory.listFiles();
 
         for(File file : files) {
-            String objectID = file.getName().substring(file.getName().length() - 4);
+            String objectID = file.getName().substring(0, file.getName().length() - 4);
             result.add(this.get(objectID));
         }
 
         return result;
+    }
+
+    public void delete(String objectID) {
+        File file = null;
+        try {
+            file = new File(filesDirectory + "/" + objectID + ".obj");
+            file.delete();
+        } catch (Exception e) {
+            // Rien
+        }
+    }
+
+    public void deleteAll() {
+        File[] files = filesDirectory.listFiles();
+
+        for(File file : files) {
+            String objectID = file.getName().substring(0, file.getName().length() - 4);
+            this.delete(objectID);
+        }
     }
 }
