@@ -422,7 +422,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         FrameLayout.LayoutParams fabCameraParams = (FrameLayout.LayoutParams) fabCamera.getLayoutParams();
 
         if (fabMenuIsOpen){
-            fab.setImageDrawable(getResources().getDrawable(R.drawable.pothole_icon_white));
+            fab.setImageDrawable(getResources().getDrawable(R.drawable.pothole));
 
             Animation hideFabLocation = AnimationUtils.loadAnimation(getApplication(), R.anim.fab_location_hide);
             fabLocationParams.bottomMargin -= (int) (fabLocation.getHeight() * 1.3);
