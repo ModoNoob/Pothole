@@ -16,6 +16,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -57,10 +58,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private String mCurrentPicturePath;
     private GoogleMap mMap;
     private LocationManager locationManager;
-    private ClusterManager<Pothole> mClusterManager;
     private GoogleApiClient googleApiClient;
     private FloatingActionButton fab;
     private boolean fabMenuIsOpen = false;
+    private boolean IsHeatMapActive = false;
+    private boolean isDataInsertActive = false;
 
     private FileSystemRepository<Pothole> potHoleRepo;
 
@@ -96,6 +98,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         fabLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                fabOnClick(v);
                 try {
                     lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
                 } catch (SecurityException e) {
@@ -103,8 +106,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 }
 
                 if (lastLocation != null) {
-                    mMap.moveCamera(CameraUpdateFactory.zoomTo(16.5f));
+                    if (mMap.getCameraPosition().zoom < 16.5f)
+                        mMap.moveCamera(CameraUpdateFactory.zoomTo(16.5f));
                     mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude())));
+                    createAndSavePothole(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()));
+                    addEffects();
                 }
 
                 Toast.makeText(getApplicationContext(), "Current position: " + lastLocation.getLatitude() + ", " + lastLocation.getLongitude(), Toast.LENGTH_SHORT).show();
@@ -127,6 +133,28 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.action_heatmap:
+                IsHeatMapActive = !IsHeatMapActive;
+                addEffects();
+                return true;
+            case R.id.action_cluster:
+                return true;
+            case R.id.data_insert:
+                isDataInsertActive = !isDataInsertActive;
+                return true;
+            case R.id.clear_data:
+                potHoleRepo.deleteAll();
+                addEffects();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
@@ -184,8 +212,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
-                createAndSavePothole(latLng);
-                addEffects();
+                if (isDataInsertActive)
+                {
+                    createAndSavePothole(latLng);
+                    addEffects();
+                }
             }
         });
 
@@ -220,15 +251,18 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     private void addEffects() {
+        mMap.clear();
 
-        // Initialize the manager with the context and the map.
         // (Activity extends context, so we can pass 'this' in the constructor.)
-        mClusterManager = new ClusterManager<Pothole>(this, mMap);
+        ClusterManager<Pothole> mClusterManager = new ClusterManager<Pothole>(this, mMap);;
 
-        // Point the map's listeners at the listeners implemented by the cluster
-        // manager.
-        mMap.setOnCameraIdleListener(mClusterManager);
-        mMap.setOnMarkerClickListener(mClusterManager);
+        if(!IsHeatMapActive) {
+
+            // Point the map's listeners at the listeners implemented by the cluster
+            // manager.
+            mMap.setOnCameraIdleListener(mClusterManager);
+            mMap.setOnMarkerClickListener(mClusterManager);
+        }
 
         FileSystemRepository<Pothole> repo = new FileSystemRepository<>(getApplicationContext());
 
@@ -252,7 +286,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         for (Object pothole : potholes) {
             if (pothole != null) {
                 try{
-                    mClusterManager.addItem((Pothole)pothole);
+                    if(!IsHeatMapActive){
+                        mClusterManager.addItem((Pothole)pothole);
+                    }
                     LatLng current = ((Pothole)pothole).getPosition();
                     //mMap.addMarker(new MarkerOptions().position(current));
                     list.add(current);
@@ -266,11 +302,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             return;
 
         // Create a heat map tile provider, passing it the latlngs of the police stations.
-        HeatmapTileProvider mProvider = new HeatmapTileProvider.Builder()
-                .data(list)
-                .build();
-        // Add a tile overlay to the map, using the heat map tile provider.
-        mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider));
+        if(IsHeatMapActive){
+            HeatmapTileProvider mProvider = new HeatmapTileProvider.Builder()
+                    .data(list)
+                    .build();
+            // Add a tile overlay to the map, using the heat map tile provider.
+            mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider));
+        }
     }
 
     //Use this to open the camera app and take a picture
