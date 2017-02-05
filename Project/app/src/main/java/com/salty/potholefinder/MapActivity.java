@@ -331,11 +331,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 .createPothole());
     }
 
-    private double randomLatitude() {
-        double latitudeMin = 45.4402;
-        double latitudeMax = 45.5248;
-        return randomDouble(latitudeMin, latitudeMax);
-    }
+
 
     //Use this to open the camera app and take a picturePath
     @Override
@@ -391,9 +387,15 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     private double randomLongitude(){
-        double longitudeMin = -73.715;
-        double longitudeMax = -73.564;
+        double longitudeMin = -74;
+        double longitudeMax = -73;
         return randomDouble(longitudeMin, longitudeMax);
+    }
+
+    private double randomLatitude() {
+        double latitudeMin = 45;
+        double latitudeMax = 46;
+        return randomDouble(latitudeMin, latitudeMax);
     }
 
     private double randomDouble(double min, double max){
