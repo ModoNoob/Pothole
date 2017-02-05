@@ -1,9 +1,6 @@
 package com.salty.potholefinder;
 
-import android.graphics.Matrix;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -12,10 +9,11 @@ import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.ImageView;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 import android.util.Log;
-import android.widget.ImageView;
 
 import com.salty.potholefinder.data.FileSystemRepository;
 import com.salty.potholefinder.model.Pothole;
@@ -32,6 +30,8 @@ public class MapActivity extends AppCompatActivity {
     static final int REQUEST_TAKE_PHOTO = 1;
 
     private String mCurrentPhotoPath;
+    private FloatingActionButton fab;
+    private boolean fabMenuIsOpen = false;
 
     private FileSystemRepository<Pothole> potHoleRepo;
 
@@ -40,9 +40,9 @@ public class MapActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
-        final FloatingActionButton fabBtn = (FloatingActionButton) this.findViewById(R.id.fab);
+        fab = (FloatingActionButton) this.findViewById(R.id.fab);
 
-        fabBtn.setOnClickListener(new View.OnClickListener() {
+        fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 fabOnClick(v);
@@ -117,6 +117,44 @@ public class MapActivity extends AppCompatActivity {
     }
 
     private void fabOnClick(View v){
-        Toast.makeText(this, "WOW", Toast.LENGTH_LONG).show();
+
+        FloatingActionButton fabLocation = (FloatingActionButton) this.findViewById(R.id.fab_location);
+        FloatingActionButton fabCamera = (FloatingActionButton) this.findViewById(R.id.fab_camera);
+
+        FrameLayout.LayoutParams fabLocationParams = (FrameLayout.LayoutParams) fabLocation.getLayoutParams();
+        FrameLayout.LayoutParams fabCameraParams = (FrameLayout.LayoutParams) fabCamera.getLayoutParams();
+
+        if (fabMenuIsOpen){
+            fab.setImageDrawable(getResources().getDrawable(R.drawable.pothole_icon_white));
+
+            Animation hideFabLocation = AnimationUtils.loadAnimation(getApplication(), R.anim.fab_location_hide);
+            fabLocationParams.bottomMargin -= (int) (fabLocation.getHeight() * 1.3);
+            fabLocation.setLayoutParams(fabLocationParams);
+            fabLocation.startAnimation(hideFabLocation);
+
+            Animation hideFabCamera = AnimationUtils.loadAnimation(getApplication(), R.anim.fab_camera_hide);
+            fabCameraParams.bottomMargin -= (int) (fabCamera.getHeight() * 2.5);
+            fabCamera.setLayoutParams(fabCameraParams);
+            fabCamera.startAnimation(hideFabCamera);
+        }
+        else{
+            fab.setImageDrawable(getResources().getDrawable(R.drawable.mr_ic_close_dark));
+
+            Animation showFabLocation = AnimationUtils.loadAnimation(getApplication(), R.anim.fab_location_show);
+            fabLocationParams.bottomMargin += (int) (fabLocation.getHeight() * 1.3);
+            fabLocation.setLayoutParams(fabLocationParams);
+            fabLocation.startAnimation(showFabLocation);
+
+            Animation showFabCamera = AnimationUtils.loadAnimation(getApplication(), R.anim.fab_camera_show);
+            fabCameraParams.bottomMargin += (int) (fabCamera.getHeight() * 2.5);
+            fabCamera.setLayoutParams(fabCameraParams);
+            fabCamera.startAnimation(showFabCamera);
+        }
+
+        fabLocation.setClickable(true);
+        fabCamera.setClickable(true);
+
+        fabMenuIsOpen = !fabMenuIsOpen;
+        Log.d("shit", v.toString());
     }
 }
