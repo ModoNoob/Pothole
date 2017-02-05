@@ -98,6 +98,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         fabLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                fabOnClick(v);
                 try {
                     lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
                 } catch (SecurityException e) {
@@ -105,8 +106,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 }
 
                 if (lastLocation != null) {
-                    mMap.moveCamera(CameraUpdateFactory.zoomTo(16.5f));
+                    if (mMap.getCameraPosition().zoom < 16.5f)
+                        mMap.moveCamera(CameraUpdateFactory.zoomTo(16.5f));
                     mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude())));
+                    createAndSavePothole(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()));
+                    addEffects();
                 }
 
                 Toast.makeText(getApplicationContext(), "Current position: " + lastLocation.getLatitude() + ", " + lastLocation.getLongitude(), Toast.LENGTH_SHORT).show();
