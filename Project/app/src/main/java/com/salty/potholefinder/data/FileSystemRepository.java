@@ -63,6 +63,9 @@ public class FileSystemRepository<T> {
         ArrayList<T> result = new ArrayList<T>();
         File[] files = filesDirectory.listFiles();
 
+        if (files == null)
+            return result;
+
         for(File file : files) {
             String objectID = file.getName().substring(0, file.getName().length() - 4);
             result.add(this.get(objectID));

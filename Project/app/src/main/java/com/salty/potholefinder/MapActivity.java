@@ -58,7 +58,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private String mCurrentPicturePath;
     private GoogleMap mMap;
     private LocationManager locationManager;
-    private LocationListener locationListener;
     private ClusterManager<Pothole> mClusterManager;
     private GoogleApiClient googleApiClient;
     private String mCurrentPhotoPath;
@@ -87,13 +86,38 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map_fragment);
         mapFragment.getMapAsync(this);
 
-        final FloatingActionButton fabBtn = (FloatingActionButton) this.findViewById(R.id.fab);
         fab = (FloatingActionButton) this.findViewById(R.id.fab);
-
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 fabOnClick(v);
+            }
+        });
+
+        final FloatingActionButton fabLocation = (FloatingActionButton) this.findViewById(R.id.fab_location);
+        fabLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+                } catch (SecurityException e) {
+                    e.printStackTrace();
+                }
+
+                if (lastLocation != null) {
+                    mMap.moveCamera(CameraUpdateFactory.zoomTo(16.5f));
+                    mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude())));
+                }
+
+                Toast.makeText(getApplicationContext(), "Current position: " + lastLocation.getLatitude() + ", " + lastLocation.getLongitude(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        final FloatingActionButton fabCamera = (FloatingActionButton) this.findViewById(R.id.fab_camera);
+        fabCamera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dispatchTakePictureIntent();
             }
         });
 
@@ -149,7 +173,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
             Pothole pothole = new PotholeBuilder()
                     .withPotholeID(UUID.randomUUID().toString())
-                    .withLatittude(0.0).withLongitude(0.0)
+                    .withLatittude(lastLocation.getLatitude())
+                    .withLongitude(lastLocation.getLongitude())
                     .withPicturePath(mCurrentPicturePath)
                     .withUnixTimeStamp(new Date().getTime())
                     .createPothole();
@@ -174,15 +199,15 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         addEffects();
 
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        locationListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-                LatLng current = new LatLng(location.getLatitude(), location.getLongitude());
-                mMap.addMarker(new MarkerOptions().position(current).title("Current Location"));
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(current));
-            }
-        };
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+        ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.INTERNET}, 10);
+            return;
+        }
+        else
+        {
+            locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        }
     }
 
     private void addEffects() {
@@ -284,6 +309,17 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         double latitudeMin = 45.4402;
         double latitudeMax = 45.5248;
         return randomDouble(latitudeMin, latitudeMax);
+    }
+
+    //Use this to open the camera app and take a picturePath
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case 10:
+                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                    locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                break;
+        }
     }
 
     private void fabOnClick(View v){
