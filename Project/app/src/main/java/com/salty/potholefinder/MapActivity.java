@@ -109,7 +109,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        //lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+        try {
+            lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+        } catch (SecurityException e) {
+            e.printStackTrace();
+        }
 
         if (lastLocation != null) {
             mMap.moveCamera(CameraUpdateFactory.zoomTo(16.5f));
@@ -158,56 +162,27 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
-    //Use this to open the camera app and take a picturePath
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-
-        switch (requestCode) {
-            case 10:
-                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-                    configureGPS();
-                break;
-        }
-    }
-
     @Override
     public void onMapReady(final GoogleMap googleMap) {
         mMap = googleMap;
 
+        try {
+            mMap.setMyLocationEnabled(true);
+        } catch(SecurityException e) {
+            e.printStackTrace();
+        }
+
         addEffects();
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        Log.d("Location", "Ici dans le onMapReady");
-        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-                Log.d("Location", "Ici dans le onLocationChanged");
                 LatLng current = new LatLng(location.getLatitude(), location.getLongitude());
                 mMap.addMarker(new MarkerOptions().position(current).title("Current Location"));
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(current));
             }
         };
-
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.INTERNET}, 10);
-            return;
-        }
-        else
-        {
-            configureGPS();
-        }
-    }
-
-    private void configureGPS() {
-        try {
-            Log.d("Location", "It changed");
-            //locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0.1f, locationListener);
-        } catch(SecurityException e) {
-            e.printStackTrace();
-        }
-
     }
 
     private void addEffects() {
