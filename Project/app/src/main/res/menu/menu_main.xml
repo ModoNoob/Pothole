@@ -4,16 +4,19 @@
     tools:context="com.example.islan.mytest.MainActivity">
     <item
         android:id="@+id/action_heatmap"
+        android:checkable="true"
         android:orderInCategory="100"
         android:title="Heat Map"
         app:showAsAction="never" />
     <item
         android:id="@+id/action_cluster"
+        android:checkable="true"
         android:orderInCategory="100"
         android:title="Cluster"
         app:showAsAction="never" />
     <item
         android:id="@+id/data_insert"
+        android:checkable="true"
         android:orderInCategory="100"
         android:title="Data Insert"
         app:showAsAction="never" />
