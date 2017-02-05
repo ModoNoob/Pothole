@@ -37,6 +37,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
@@ -279,6 +280,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         } catch(SecurityException e) {
             e.printStackTrace();
         }
+
+        mMap.getUiSettings().setMapToolbarEnabled(false);
 
         addEffects(false);
 
