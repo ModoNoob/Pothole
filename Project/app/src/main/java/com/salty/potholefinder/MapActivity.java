@@ -1,9 +1,6 @@
 package com.salty.potholefinder;
 
-import android.graphics.Matrix;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -12,10 +9,8 @@ import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.Toast;
 import android.util.Log;
-import android.widget.ImageView;
 
 import com.salty.potholefinder.data.FileSystemRepository;
 import com.salty.potholefinder.model.Pothole;
@@ -63,7 +58,7 @@ public class MapActivity extends AppCompatActivity {
         }
     }
 
-    //Use this to open the camera app and take a picture
+    //Use this to open the camera app and take a picturePath
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Ensure that there's a camera activity to handle the intent
@@ -109,8 +104,8 @@ public class MapActivity extends AppCompatActivity {
         Pothole potHole = new Pothole();
         potHole.potholeID = UUID.randomUUID().toString();
         potHole.latitude = 0.0;
-        potHole.longtitude = 0.0;
-        potHole.picture = mCurrentPhotoPath;
+        potHole.longitude = 0.0;
+        potHole.picturePath = mCurrentPhotoPath;
         potHole.unixTimeStamp = new Date().getTime();
 
         potHoleRepo.save(potHole.potholeID, potHole);

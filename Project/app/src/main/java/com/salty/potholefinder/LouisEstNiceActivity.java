@@ -26,9 +26,9 @@ public class LouisEstNiceActivity extends AppCompatActivity {
         //repository.deleteAll();
 
         Pothole p = new Pothole();
-        p.longtitude = 45.5037537d;
+        p.longitude = 45.5037537d;
         p.latitude = -73.6150756d;
-        p.picture = "charles pls";
+        p.picturePath = "charles pls";
         p.potholeID = uuid;
         p.unixTimeStamp = new Date().getTime();
 

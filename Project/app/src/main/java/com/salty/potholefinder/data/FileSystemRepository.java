@@ -3,6 +3,8 @@ package com.salty.potholefinder.data;
 
 import android.content.Context;
 
+import com.salty.potholefinder.model.Pothole;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;

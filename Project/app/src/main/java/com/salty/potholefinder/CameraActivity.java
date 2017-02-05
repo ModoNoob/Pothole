@@ -82,8 +82,8 @@ public class CameraActivity extends AppCompatActivity {
             Pothole potHole = new Pothole();
             potHole.potholeID = UUID.randomUUID().toString();
             potHole.latitude = 0.0;
-            potHole.longtitude = 0.0;
-            potHole.picture = mCurrentPhotoPath;
+            potHole.longitude = 0.0;
+            potHole.picturePath = mCurrentPhotoPath;
             potHole.unixTimeStamp = new Date().getTime();
 
             potHoleRepo.save(potHole.potholeID, potHole);
