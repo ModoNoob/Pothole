@@ -1,8 +1,10 @@
 package com.salty.potholefinder;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
@@ -15,13 +17,16 @@ import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -36,6 +41,7 @@ import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.heatmaps.HeatmapTileProvider;
+import com.ortiz.touch.TouchImageView;
 import com.salty.potholefinder.data.FileSystemRepository;
 import com.salty.potholefinder.model.Pothole;
 import com.salty.potholefinder.model.PotholeBuilder;
@@ -72,12 +78,15 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private Location lastLocation;
 
+    private Context context;
+
     Random r = new Random();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+        context = this.getBaseContext();
 
         if (googleApiClient == null) {
             googleApiClient = new GoogleApiClient.Builder(this)
@@ -317,6 +326,24 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             @Override
             public boolean onClusterItemClick(Pothole item) {
                 Log.d("shit", Double.toString(item.latitude));
+
+                LayoutInflater inflater = getLayoutInflater();
+                View imageDialog = inflater.inflate(R.layout.dialog_image, null);
+                Dialog dialog = new Dialog(MapActivity.this);
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                dialog.setContentView(imageDialog);
+                dialog.setCanceledOnTouchOutside(true);
+                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+
+                ImageView image = (ImageView) imageDialog.findViewById(R.id.image);
+                // Set your image
+
+                Uri uri = Uri.parse(item.picturePath);
+
+                image.setImageURI(uri);
+                Log.d("shit", Double.toString(item.longitude));
+
+                dialog.show();
                 return false;
             }
         });
