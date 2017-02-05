@@ -121,6 +121,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         fabCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                fabOnClick(v);
                 dispatchTakePictureIntent();
             }
         });
@@ -141,12 +142,15 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         switch (item.getItemId()) {
             case R.id.action_heatmap:
                 IsHeatMapActive = !IsHeatMapActive;
+                item.setChecked(IsHeatMapActive);
                 addEffects();
                 return true;
             case R.id.action_cluster:
+                item.setChecked(!item.isChecked());
                 return true;
             case R.id.data_insert:
                 isDataInsertActive = !isDataInsertActive;
+                item.setChecked(isDataInsertActive);
                 return true;
             case R.id.clear_data:
                 potHoleRepo.deleteAll();
