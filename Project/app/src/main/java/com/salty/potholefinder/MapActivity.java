@@ -250,15 +250,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         FileSystemRepository<Pothole> repo = new FileSystemRepository<>(getApplicationContext());
 
         List<LatLng> list = new ArrayList<>();
-
-        SimplexNoise simplexNoise = new SimplexNoise(100,0.1,5000);
-        simplexNoise.seed = 1234567890;
-
         List<Pothole> potholes = repo.getAll();
-        for (int i = 45, x = 0; i < 46; i+=0.0005, x++){
-            for (int j = 0, y = 0; j < 100; j+=0.0005, y++){
-                if(simplexNoise.getNoise(x, y) > 0.75)
-                    addRandomPothole(potholes, i, j);
+
+        int length = 25;
+        Random rand = new Random(1234567890);
+        for (int x = 0; x < length; x++){
+            for (int y = 0; y < length; y++){
+                if(rand.nextDouble() > 0.8)
+                    addRandomPothole(potholes, 45 + ((double)x / length), -74 + ((double)y / length));
             }
         }
 
