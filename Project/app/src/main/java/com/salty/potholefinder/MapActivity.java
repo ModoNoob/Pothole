@@ -58,10 +58,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private String mCurrentPicturePath;
     private GoogleMap mMap;
     private LocationManager locationManager;
-    private ClusterManager<Pothole> mClusterManager;
     private GoogleApiClient googleApiClient;
     private FloatingActionButton fab;
     private boolean fabMenuIsOpen = false;
+    private boolean IsHeatMapActive = false;
 
     private FileSystemRepository<Pothole> potHoleRepo;
 
@@ -135,6 +135,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.action_heatmap:
+                IsHeatMapActive = !IsHeatMapActive;
+                addEffects();
                 return true;
             case R.id.action_cluster:
                 return true;
@@ -236,15 +238,18 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     private void addEffects() {
+        mMap.clear();
 
-        // Initialize the manager with the context and the map.
         // (Activity extends context, so we can pass 'this' in the constructor.)
-        mClusterManager = new ClusterManager<Pothole>(this, mMap);
+        ClusterManager<Pothole> mClusterManager = new ClusterManager<Pothole>(this, mMap);;
 
-        // Point the map's listeners at the listeners implemented by the cluster
-        // manager.
-        mMap.setOnCameraIdleListener(mClusterManager);
-        mMap.setOnMarkerClickListener(mClusterManager);
+        if(!IsHeatMapActive) {
+
+            // Point the map's listeners at the listeners implemented by the cluster
+            // manager.
+            mMap.setOnCameraIdleListener(mClusterManager);
+            mMap.setOnMarkerClickListener(mClusterManager);
+        }
 
         FileSystemRepository<Pothole> repo = new FileSystemRepository<>(getApplicationContext());
 
@@ -263,7 +268,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         for (Object pothole : potholes) {
             if (pothole != null) {
                 try{
-                    mClusterManager.addItem((Pothole)pothole);
+                    if(!IsHeatMapActive){
+                        mClusterManager.addItem((Pothole)pothole);
+                    }
                     LatLng current = ((Pothole)pothole).getPosition();
                     //mMap.addMarker(new MarkerOptions().position(current));
                     list.add(current);
@@ -277,11 +284,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             return;
 
         // Create a heat map tile provider, passing it the latlngs of the police stations.
-        HeatmapTileProvider mProvider = new HeatmapTileProvider.Builder()
-                .data(list)
-                .build();
-        // Add a tile overlay to the map, using the heat map tile provider.
-        mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider));
+        if(IsHeatMapActive){
+            HeatmapTileProvider mProvider = new HeatmapTileProvider.Builder()
+                    .data(list)
+                    .build();
+            // Add a tile overlay to the map, using the heat map tile provider.
+            mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider));
+        }
     }
 
     //Use this to open the camera app and take a picture
