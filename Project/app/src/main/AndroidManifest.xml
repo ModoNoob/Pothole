@@ -13,12 +13,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".MainActivity">
-
-        </activity>
+        <activity android:name=".MainActivity"></activity>
         <activity android:name=".CameraActivity"></activity>
         <activity android:name=".LouisEstNiceActivity"></activity>
-        <activity android:name=".MapsActivitySimpleTest" android:label="@string/title_activity_maps_simple_test">
+        <activity android:name=".MapActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
