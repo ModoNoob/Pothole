@@ -39,6 +39,8 @@ import com.salty.potholefinder.data.FileSystemRepository;
 import com.salty.potholefinder.model.Pothole;
 import com.salty.potholefinder.model.PotholeBuilder;
 
+import org.apache.commons.io.FileUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -159,6 +161,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 return true;
             case R.id.clear_data:
                 potHoleRepo.deleteAll();
+                File dir = new File("/storage/emulated/0/Android/data/com.salty.potholefinder/files/Pictures/");
+                try {
+                    FileUtils.deleteDirectory(dir);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 addEffects();
                 return true;
             default:
@@ -408,6 +416,30 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         // Save a file: path for use with ACTION_VIEW intents
         mCurrentPicturePath = image.getAbsolutePath();
         return image;
+    }
+
+    void DeleteRecursive(File dir)
+    {
+        Log.d("DeleteRecursive", "DELETEPREVIOUS TOP" + dir.getPath());
+        if (dir.isDirectory())
+        {
+            String[] children = dir.list();
+            for (String aChildren : children) {
+                File temp = new File(dir, aChildren);
+                if (temp.isDirectory()) {
+                    Log.d("DeleteRecursive", "Recursive Call" + temp.getPath());
+                    DeleteRecursive(temp);
+                } else {
+                    Log.d("DeleteRecursive", "Delete File" + temp.getPath());
+                    boolean b = temp.delete();
+                    if (!b) {
+                        Log.d("DeleteRecursive", "DELETE FAIL");
+                    }
+                }
+            }
+
+        }
+        dir.delete();
     }
 
     private void mockPothole(List<Pothole> potholes)
