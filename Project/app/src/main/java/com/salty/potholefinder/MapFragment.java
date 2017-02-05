@@ -20,6 +20,11 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.salty.potholefinder.data.FileSystemRepository;
+import com.salty.potholefinder.model.Pothole;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MapFragment extends FragmentActivity implements OnMapReadyCallback {
 
@@ -60,6 +65,13 @@ public class MapFragment extends FragmentActivity implements OnMapReadyCallback 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+
+        FileSystemRepository<Pothole> repo = new FileSystemRepository<>(getApplicationContext());
+
+        for (Pothole pothole : repo.getAll()) {
+            LatLng current = new LatLng(pothole.latitude, pothole.longtitude);
+            mMap.addMarker(new MarkerOptions().position(current));
+        }
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LocationListener() {
