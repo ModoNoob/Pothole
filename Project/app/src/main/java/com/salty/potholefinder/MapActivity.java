@@ -503,7 +503,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 .createPothole());
     }
 
-    private void addRandomPothole(List<Pothole> potholes, double latitude, double longitude){
+    private void addPotholeAtLocation(List<Pothole> potholes, double latitude, double longitude){
         potholes.add(new PotholeBuilder()
                 .withPotholeID(UUID.randomUUID().toString())
                 .withLatitude(latitude)
