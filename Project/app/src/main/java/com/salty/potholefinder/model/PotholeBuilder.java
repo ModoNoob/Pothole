@@ -15,7 +15,7 @@ public class PotholeBuilder {
         this.potholeID = potholeID;
         return this;
     }
-    public PotholeBuilder withLatittude(double latitude){
+    public PotholeBuilder withLatitude(double latitude){
         this.latitude = latitude;
         return this;
     }

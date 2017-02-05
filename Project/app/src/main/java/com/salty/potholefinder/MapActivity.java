@@ -194,15 +194,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
-                String uuid = UUID.randomUUID().toString();
-                potHoleRepo.save(uuid, new PotholeBuilder()
-                        .withPotholeID(uuid)
-                        .withLatittude(latLng.latitude)
-                        .withLongitude(latLng.longitude)
-                        .withPicturePath("")
-                        .withUnixTimeStamp(new Date().getTime())
-                        .createPothole());
-                addEffects();
+                createAndSavePothole(latLng);
             }
         });
 
@@ -384,6 +376,28 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         fabMenuIsOpen = !fabMenuIsOpen;
         Log.d("shit", v.toString());
+    }
+
+    private void createAndSavePothole(LatLng latLng){
+        String uuid = UUID.randomUUID().toString();
+        potHoleRepo.save(uuid, new PotholeBuilder()
+                .withPotholeID(uuid)
+                .withLatitude(latLng.latitude)
+                .withLongitude(latLng.longitude)
+                .withPicturePath("")
+                .withUnixTimeStamp(new Date().getTime())
+                .createPothole());
+        addEffects();
+    }
+
+    private void addRandomPothole(List<Pothole> potholes){
+        potholes.add(new PotholeBuilder()
+                .withPotholeID(UUID.randomUUID().toString())
+                .withLatitude(randomLatitude())
+                .withLongitude(randomLongitude())
+                .withPicturePath("")
+                .withUnixTimeStamp(new Date().getTime())
+                .createPothole());
     }
 
     private double randomLongitude(){
