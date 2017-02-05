@@ -62,6 +62,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private FloatingActionButton fab;
     private boolean fabMenuIsOpen = false;
     private boolean IsHeatMapActive = false;
+    private boolean isDataInsertActive = false;
 
     private FileSystemRepository<Pothole> potHoleRepo;
 
@@ -141,6 +142,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             case R.id.action_cluster:
                 return true;
             case R.id.data_insert:
+                isDataInsertActive = !isDataInsertActive;
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -202,8 +204,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
-                createAndSavePothole(latLng);
-                addEffects();
+                if (isDataInsertActive)
+                {
+                    createAndSavePothole(latLng);
+                    addEffects();
+                }
             }
         });
 
