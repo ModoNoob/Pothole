@@ -59,9 +59,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private GoogleApiClient googleApiClient;
     private FloatingActionButton fab;
     private boolean fabMenuIsOpen = false;
-    private boolean IsHeatMapActive = false;
-    private boolean IsClusterActive = true;
-    private boolean isDataInsertActive = false;
 
     private ClusterManager<Pothole> mClusterManager;
 
@@ -134,6 +131,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+
+        menu.findItem(R.id.action_heatmap).setChecked(Globals.isHeatMapActive);
+        menu.findItem(R.id.action_cluster).setChecked(Globals.isClusterActive);
+        menu.findItem(R.id.data_insert).setChecked(Globals.isDataInsertActive);
+
         return true;
     }
 
@@ -142,18 +144,18 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.action_heatmap:
-                IsHeatMapActive = !IsHeatMapActive;
-                item.setChecked(IsHeatMapActive);
+                Globals.isHeatMapActive = !Globals.isHeatMapActive;
+                item.setChecked(Globals.isHeatMapActive);
                 addEffects();
                 return true;
             case R.id.action_cluster:
-                IsClusterActive = !IsClusterActive;
-                item.setChecked(IsClusterActive);
+                Globals.isClusterActive = !Globals.isClusterActive;
+                item.setChecked(Globals.isClusterActive);
                 addEffects();
                 return true;
             case R.id.data_insert:
-                isDataInsertActive = !isDataInsertActive;
-                item.setChecked(isDataInsertActive);
+                Globals.isDataInsertActive = !Globals.isDataInsertActive;
+                item.setChecked(Globals.isDataInsertActive);
                 return true;
             case R.id.clear_data:
                 potHoleRepo.deleteAll();
@@ -172,15 +174,15 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             e.printStackTrace();
         }
 
-        if (lastLocation != null) {
-            mMap.moveCamera(CameraUpdateFactory.zoomTo(16.5f));
+        if (lastLocation != null && Globals.isFirstConnection) {
+            mMap.moveCamera(CameraUpdateFactory.zoomTo(15f));
             mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude())));
+            Globals.isFirstConnection = false;
         }
     }
 
     @Override
     public void onConnectionSuspended(int i) {
-
     }
 
     @Override
@@ -219,7 +221,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
-                if (isDataInsertActive)
+                if (Globals.isDataInsertActive)
                 {
                     createAndSavePothole(latLng);
                     addEffects();
@@ -290,7 +292,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         for (Object pothole : potholes) {
             if (pothole != null) {
                 try{
-                    if(IsClusterActive){
+                    if(Globals.isClusterActive){
                         mClusterManager.addItem((Pothole)pothole);
                     }
                     LatLng current = ((Pothole)pothole).getPosition();
@@ -306,7 +308,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             return;
 
         // Create a heat map tile provider, passing it the latlngs of the police stations.
-        if(IsHeatMapActive){
+        if(Globals.isHeatMapActive){
             HeatmapTileProvider mProvider = new HeatmapTileProvider.Builder()
                     .data(list)
                     .build();
