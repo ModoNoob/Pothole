@@ -54,7 +54,7 @@ public class PotholeRenderer extends DefaultClusterRenderer<Pothole> {
     protected void onBeforeClusterItemRendered(Pothole pothole, MarkerOptions markerOptions) {
         // Draw a single person.
         // Set the info window to show their name.
-        if(pothole.picturePath == null || pothole.picturePath == "")
+        if(pothole.picturePath == null || pothole.picturePath.equals(""))
         {
             super.onBeforeClusterItemRendered(pothole, markerOptions);
             return;
