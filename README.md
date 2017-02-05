@@ -1,5 +1,5 @@
 <p align="center">
-<img src="/Project/app/src/main/res/mipmap/pothole_app_icon.png" width="250">
+<img src="http://i.imgur.com/DjAqW0z.png" width="250">
 </p>
 
 #Pothole Finder
