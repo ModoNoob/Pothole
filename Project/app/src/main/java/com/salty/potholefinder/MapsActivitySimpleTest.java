@@ -3,15 +3,18 @@ package com.salty.potholefinder;
 import android.*;
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 
+import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -26,7 +29,7 @@ public class MapsActivitySimpleTest extends FragmentActivity implements OnMapRea
     private GoogleMap mMap;
     private LocationManager locationManager;
     private LocationListener locationListener;
-    
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,8 +49,6 @@ public class MapsActivitySimpleTest extends FragmentActivity implements OnMapRea
                     configureGPS();
                 break;
         }
-
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     /**
@@ -85,7 +86,8 @@ public class MapsActivitySimpleTest extends FragmentActivity implements OnMapRea
 
             @Override
             public void onProviderDisabled(String provider) {
-
+                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                startActivity(intent);
             }
         };
 
