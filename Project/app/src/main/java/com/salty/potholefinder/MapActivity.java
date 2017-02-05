@@ -8,6 +8,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
 import android.view.View;
 import android.widget.Toast;
 import android.util.Log;
@@ -45,6 +46,13 @@ public class MapActivity extends AppCompatActivity {
         });
 
         potHoleRepo = new FileSystemRepository<>(getApplicationContext());
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
     }
 
     @Override
