@@ -26,14 +26,12 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.heatmaps.HeatmapTileProvider;
@@ -62,7 +60,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private FloatingActionButton fab;
     private boolean fabMenuIsOpen = false;
     private boolean IsHeatMapActive = false;
+    private boolean IsClusterActive = true;
     private boolean isDataInsertActive = false;
+
+    private ClusterManager<Pothole> mClusterManager;
 
     private FileSystemRepository<Pothole> potHoleRepo;
 
@@ -144,6 +145,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 addEffects();
                 return true;
             case R.id.action_cluster:
+                IsClusterActive = !IsClusterActive;
+                addEffects();
                 return true;
             case R.id.data_insert:
                 isDataInsertActive = !isDataInsertActive;
@@ -254,15 +257,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mMap.clear();
 
         // (Activity extends context, so we can pass 'this' in the constructor.)
-        ClusterManager<Pothole> mClusterManager = new ClusterManager<Pothole>(this, mMap);;
+        mClusterManager = new ClusterManager<Pothole>(this, mMap);
 
-        if(!IsHeatMapActive) {
-
-            // Point the map's listeners at the listeners implemented by the cluster
-            // manager.
-            mMap.setOnCameraIdleListener(mClusterManager);
-            mMap.setOnMarkerClickListener(mClusterManager);
-        }
+        // Point the map's listeners at the listeners implemented by the cluster
+        // manager.
+        mMap.setOnCameraIdleListener(mClusterManager);
+        mMap.setOnMarkerClickListener(mClusterManager);
 
         FileSystemRepository<Pothole> repo = new FileSystemRepository<>(getApplicationContext());
 
@@ -286,7 +286,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         for (Object pothole : potholes) {
             if (pothole != null) {
                 try{
-                    if(!IsHeatMapActive){
+                    if(IsClusterActive){
                         mClusterManager.addItem((Pothole)pothole);
                     }
                     LatLng current = ((Pothole)pothole).getPosition();
@@ -499,6 +499,26 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 .withLatitude(lastLocation.getLatitude())
                 .withLongitude(lastLocation.getLongitude())
                 .withPicturePath(mCurrentPicturePath)
+                .withUnixTimeStamp(new Date().getTime())
+                .createPothole());
+    }
+
+    private void addRandomPothole(List<Pothole> potholes, double latitude, double longitude){
+        potholes.add(new PotholeBuilder()
+                .withPotholeID(UUID.randomUUID().toString())
+                .withLatitude(latitude)
+                .withLongitude(longitude)
+                .withPicturePath("")
+                .withUnixTimeStamp(new Date().getTime())
+                .createPothole();
+    }
+
+    private void addRandomPothole(List<Pothole> potholes){
+        potholes.add(new PotholeBuilder()
+                .withPotholeID(UUID.randomUUID().toString())
+                .withLatitude(randomLatitude())
+                .withLongitude(randomLongitude())
+                .withPicturePath("")
                 .withUnixTimeStamp(new Date().getTime())
                 .createPothole());
     }
