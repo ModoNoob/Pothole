@@ -33,7 +33,9 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.TileOverlayOptions;
+import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
+import com.google.maps.android.clustering.view.ClusterRenderer;
 import com.google.maps.android.heatmaps.HeatmapTileProvider;
 import com.salty.potholefinder.data.FileSystemRepository;
 import com.salty.potholefinder.model.Pothole;
@@ -48,6 +50,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
@@ -276,24 +279,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mMap.setOnCameraIdleListener(mClusterManager);
         mMap.setOnMarkerClickListener(mClusterManager);
 
+        mClusterManager.setRenderer(new PotholeRenderer(getApplicationContext(), mMap, mClusterManager));
+
         FileSystemRepository<Pothole> repo = new FileSystemRepository<>(getApplicationContext());
 
         List<LatLng> list = new ArrayList<>();
         List<Pothole> potholes = repo.getAll();
         mockPothole(potholes);
-        /*int length = 25;
-        int halfLength = 25 / 2;
-        Random rand = new Random(1234567890);
-        for (int x = 0; x < length; x++){
-            for (int y = 0; y < length; y++){
-
-                double xx = (double) x - halfLength;
-                double yy = (double) y - halfLength;
-                double moreChance = Math.sqrt(xx * xx + yy * yy) * 0.05f;
-                if(rand.nextDouble() > 0.5 + moreChance)
-                    addRandomPothole(potholes, 45 + ((double)x / length), -74 + ((double)y / length));
-            }
-        }*/
 
         for (Object pothole : potholes) {
             if (pothole != null) {
@@ -574,5 +566,4 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private double randomDouble(double min, double max){
         return min + (max - min) * r.nextDouble();
     }
-
 }
