@@ -3,28 +3,43 @@ package com.salty.potholefinder;
 import com.salty.potholefinder.model.Pothole;
 
 public class PotholeBuilder {
-    public Pothole withPotholeID(String potholeID){
+    private String potholeID;
+    private double latitude;
+    private double longitude;
+    private String picturePath;
+    private long unixTimeStamp;
+
+    public PotholeBuilder(){
+
+    }
+
+    public PotholeBuilder withPotholeID(String potholeID){
+        this.potholeID = potholeID;
+        return this;
+    }
+    public PotholeBuilder withLatittude(double latitude){
+        this.latitude = latitude;
+        return this;
+    }
+    public PotholeBuilder withLongitude(double longitude){
+        this.longitude = longitude;
+        return this;
+    }
+    public PotholeBuilder withPicturePath(String picturePath){
+        this.picturePath = picturePath;
+        return this;
+    }
+    public PotholeBuilder withUnixTimeStamp(long unixTimeStamp){
+        this.unixTimeStamp = unixTimeStamp;
+        return this;
+    }
+
+    public Pothole createPothole(){
         Pothole pothole = new Pothole();
         pothole.potholeID = potholeID;
-        return pothole;
-    }
-    public Pothole withLatittude(double latitude){
-        Pothole pothole = new Pothole();
         pothole.latitude = latitude;
-        return pothole;
-    }
-    public Pothole withLongitude(double longitude){
-        Pothole pothole = new Pothole();
         pothole.longitude = longitude;
-        return pothole;
-    }
-    public Pothole withPicturePath(String picturePath){
-        Pothole pothole = new Pothole();
         pothole.picturePath = picturePath;
-        return pothole;
-    }
-    public Pothole withUnixTimeStamp(long unixTimeStamp){
-        Pothole pothole = new Pothole();
         pothole.unixTimeStamp = unixTimeStamp;
         return pothole;
     }

@@ -32,7 +32,6 @@ public class CameraActivity extends AppCompatActivity {
 
     String mCurrentPhotoPath;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
