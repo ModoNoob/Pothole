@@ -185,6 +185,17 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         };
     }
 
+    @Override
+    public void onBackPressed() {
+        if (fabMenuIsOpen){
+            fabOnClick(this.findViewById(R.id.fab));
+        }
+        else
+        {
+            moveTaskToBack(true);
+        }
+    }
+
     private void addEffects() {
 
         // Initialize the manager with the context and the map.
