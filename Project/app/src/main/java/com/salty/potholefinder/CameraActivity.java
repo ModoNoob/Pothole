@@ -14,15 +14,21 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import com.salty.potholefinder.data.FileSystemRepository;
+import com.salty.potholefinder.model.Pothole;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.UUID;
 
 public class CameraActivity extends AppCompatActivity {
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
     static final int REQUEST_TAKE_PHOTO = 1;
+
+    private FileSystemRepository<Pothole> potHoleRepo;
 
     String mCurrentPhotoPath;
 
@@ -31,6 +37,8 @@ public class CameraActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
+
+        potHoleRepo = new FileSystemRepository<>(getApplicationContext());
 
         Button takePictureButton = (Button)findViewById(R.id.takePictureButton);
 
@@ -62,6 +70,8 @@ public class CameraActivity extends AppCompatActivity {
 
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
+
+
             }
         }
     }
@@ -69,8 +79,16 @@ public class CameraActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath);
+            Pothole potHole = new Pothole();
+            potHole.potholeID = UUID.randomUUID().toString();
+            potHole.latitude = 0.0;
+            potHole.longtitude = 0.0;
+            potHole.picture = mCurrentPhotoPath;
+            potHole.unixTimeStamp = new Date().getTime();
 
+            potHoleRepo.save(potHole.potholeID, potHole);
+
+            Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath);
             ImageView mImageView = (ImageView)findViewById(R.id.activity_camera_imageview);
             mImageView.setImageBitmap(bitmap);
         }

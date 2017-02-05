@@ -22,6 +22,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".CameraActivity"></activity>
+        <activity android:name=".LouisEstNiceActivity"></activity>
+        <activity android:name=".MapsActivitySimpleTest" android:label="@string/title_activity_maps_simple_test"></activity>
 
         <provider
             android:name="android.support.v4.content.FileProvider"

@@ -2,28 +2,36 @@ package com.salty.potholefinder;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 
+import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.salty.potholefinder.data.FileSystemRepository;
+import com.salty.potholefinder.model.Pothole;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MapFragment extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private LocationManager locationManager;
     private LocationListener locationListener;
-    
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,8 +51,6 @@ public class MapFragment extends FragmentActivity implements OnMapReadyCallback 
                     configureGPS();
                 break;
         }
-
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     /**
@@ -59,6 +65,13 @@ public class MapFragment extends FragmentActivity implements OnMapReadyCallback 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+
+        FileSystemRepository<Pothole> repo = new FileSystemRepository<>(getApplicationContext());
+
+        for (Pothole pothole : repo.getAll()) {
+            LatLng current = new LatLng(pothole.latitude, pothole.longtitude);
+            mMap.addMarker(new MarkerOptions().position(current));
+        }
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LocationListener() {
@@ -82,7 +95,8 @@ public class MapFragment extends FragmentActivity implements OnMapReadyCallback 
 
             @Override
             public void onProviderDisabled(String provider) {
-
+                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                startActivity(intent);
             }
         };
 
