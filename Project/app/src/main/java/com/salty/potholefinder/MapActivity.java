@@ -482,6 +482,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 .createPothole());
     }
 
+    private Pothole addPothole(double latitude, double longitude){
+        return new PotholeBuilder()
+                .withPotholeID(UUID.randomUUID().toString())
+                .withLatitude(latitude)
+                .withLongitude(longitude)
+                .withPicturePath("")
+                .withUnixTimeStamp(new Date().getTime())
+                .createPothole();
+    }
+
     private void createAndSavePotholeLastLocation(){
         String uuid = UUID.randomUUID().toString();
         potHoleRepo.save(uuid, new PotholeBuilder()
@@ -491,16 +501,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 .withPicturePath(mCurrentPicturePath)
                 .withUnixTimeStamp(new Date().getTime())
                 .createPothole());
-    }
-
-    private Pothole addPothole(double latitude, double longitude){
-        return new PotholeBuilder()
-                .withPotholeID(UUID.randomUUID().toString())
-                .withLatitude(latitude)
-                .withLongitude(longitude)
-                .withPicturePath("")
-                .withUnixTimeStamp(new Date().getTime())
-                .createPothole();
     }
 
     private double randomLongitude(){
