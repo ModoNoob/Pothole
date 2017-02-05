@@ -234,15 +234,20 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         List<LatLng> list = new ArrayList<>();
         List<Pothole> potholes = repo.getAll();
-
-        int length = 25;
+        mockPothole(potholes);
+        /*int length = 25;
+        int halfLength = 25 / 2;
         Random rand = new Random(1234567890);
         for (int x = 0; x < length; x++){
             for (int y = 0; y < length; y++){
-                if(rand.nextDouble() > 0.8)
+
+                double xx = (double) x - halfLength;
+                double yy = (double) y - halfLength;
+                double moreChance = Math.sqrt(xx * xx + yy * yy) * 0.05f;
+                if(rand.nextDouble() > 0.5 + moreChance)
                     addRandomPothole(potholes, 45 + ((double)x / length), -74 + ((double)y / length));
             }
-        }
+        }*/
 
         for (Object pothole : potholes) {
             if (pothole != null) {
@@ -362,6 +367,73 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         return image;
     }
 
+    private void mockPothole(List<Pothole> potholes)
+    {
+        potholes.add(addPothole(45.480702, -73.695810));
+        potholes.add(addPothole(45.496413, -73.681848));
+        potholes.add(addPothole(45.502790, -73.659725));
+        potholes.add(addPothole(45.500669, -73.647645));
+        potholes.add(addPothole(45.494492, -73.637495));
+        potholes.add(addPothole(45.493762, -73.629985));
+        potholes.add(addPothole(45.484078, -73.614535));
+        potholes.add(addPothole(45.466741, -73.639222));
+        potholes.add(addPothole(45.500669, -73.647645));
+        potholes.add(addPothole(45.461538, -73.648074));
+        potholes.add(addPothole(45.431866, -73.624578));
+        potholes.add(addPothole(45.433763, -73.616273));
+        potholes.add(addPothole(45.451201, -73.593282));
+        potholes.add(addPothole(45.451329, -73.592230));
+        potholes.add(addPothole(45.453083, -73.592016));
+        potholes.add(addPothole(45.459434, -73.595470));
+        potholes.add(addPothole(45.465221, -73.584430));
+        potholes.add(addPothole(45.469909, -73.589398));
+        potholes.add(addPothole(45.475386, -73.586823));
+        potholes.add(addPothole(45.479757, -73.587981));
+        potholes.add(addPothole(45.480404, -73.567929));
+        potholes.add(addPothole(45.474167, -73.561610));
+        potholes.add(addPothole(45.538271, -73.614450));
+        potholes.add(addPothole(45.542900, -73.601875));
+        potholes.add(addPothole(45.548265, -73.606575));
+        potholes.add(addPothole(45.552172, -73.612046));
+        potholes.add(addPothole(45.555658, -73.616896));
+        potholes.add(addPothole(45.563681, -73.593807));
+        potholes.add(addPothole(45.568803, -73.592906));
+        potholes.add(addPothole(45.572138, -73.609214));
+        potholes.add(addPothole(45.580699, -73.581040));
+        potholes.add(addPothole(45.585399, -73.570461));
+        potholes.add(addPothole(45.594409, -73.560719));
+        potholes.add(addPothole(45.614210, -73.578401));
+        potholes.add(addPothole(45.621549, -73.573637));
+        potholes.add(addPothole(45.621234, -73.556256));
+        potholes.add(addPothole(45.610817, -73.531237));
+        potholes.add(addPothole(45.605444, -73.512332));
+        potholes.add(addPothole(45.594634, -73.511217));
+        potholes.add(addPothole(45.582396, -73.516645));
+        potholes.add(addPothole(45.568112, -73.522546));
+        potholes.add(addPothole(45.495586, -73.790467));
+        potholes.add(addPothole(45.557310, -73.529906));
+        potholes.add(addPothole(45.505347, -73.806024));
+        potholes.add(addPothole(45.513196, -73.806796));
+        potholes.add(addPothole(45.534153, -73.797033));
+        potholes.add(addPothole(45.547829, -73.778923));
+        potholes.add(addPothole(45.557641, -73.771241));
+        potholes.add(addPothole(45.572063, -73.780854));
+        potholes.add(addPothole(45.576494, -73.803320));
+        potholes.add(addPothole(45.606419, -73.800509));
+        potholes.add(addPothole(45.620468, -73.773365));
+        potholes.add(addPothole(45.641565, -73.793256));
+        potholes.add(addPothole(45.458317, -73.474824));
+        potholes.add(addPothole(45.462140, -73.458667));
+        potholes.add(addPothole(45.475879, -73.449676));
+        potholes.add(addPothole(45.493766, -73.456221));
+        potholes.add(addPothole(45.502459, -73.462615));
+        potholes.add(addPothole(45.504369, -73.479373));
+        potholes.add(addPothole(45.504339, -73.478687));
+        potholes.add(addPothole(45.504625, -73.476691));
+        potholes.add(addPothole(45.516248, -73.490295));
+        potholes.add(addPothole(45.521330, -73.504951));
+    }
+
     private void createAndSavePothole(LatLng latLng){
         String uuid = UUID.randomUUID().toString();
         potHoleRepo.save(uuid, new PotholeBuilder()
@@ -384,24 +456,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 .createPothole());
     }
 
-    private void addRandomPothole(List<Pothole> potholes, double latitude, double longitude){
-        potholes.add(new PotholeBuilder()
+    private Pothole addPothole(double latitude, double longitude){
+        return new PotholeBuilder()
                 .withPotholeID(UUID.randomUUID().toString())
                 .withLatitude(latitude)
                 .withLongitude(longitude)
                 .withPicturePath("")
                 .withUnixTimeStamp(new Date().getTime())
-                .createPothole());
-    }
-
-    private void addRandomPothole(List<Pothole> potholes){
-        potholes.add(new PotholeBuilder()
-                .withPotholeID(UUID.randomUUID().toString())
-                .withLatitude(randomLatitude())
-                .withLongitude(randomLongitude())
-                .withPicturePath("")
-                .withUnixTimeStamp(new Date().getTime())
-                .createPothole());
+                .createPothole();
     }
 
     private double randomLongitude(){
