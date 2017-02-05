@@ -106,9 +106,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 }
 
                 if (lastLocation != null) {
-                    if (mMap.getCameraPosition().zoom < 16.5f)
-                        mMap.moveCamera(CameraUpdateFactory.zoomTo(16.5f));
-                    mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude())));
+                    if (mMap.getCameraPosition().zoom < 15f)
+                        mMap.animateCamera(CameraUpdateFactory.zoomTo(15f), 1000, null);
+                    mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude())), 1000, null);
                     createAndSavePothole(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()));
                     addEffects();
                 }
@@ -379,7 +379,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         fabCamera.setClickable(true);
 
         fabMenuIsOpen = !fabMenuIsOpen;
-        Log.d("shit", v.toString());
     }
 
     //creates a file with a valid path that will then be used if
