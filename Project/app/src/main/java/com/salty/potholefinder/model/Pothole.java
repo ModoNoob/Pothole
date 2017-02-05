@@ -11,15 +11,16 @@ public class Pothole implements Serializable, ClusterItem {
 
     public double latitude;
 
-    public double longtitude;
+    public double longitude;
 
-    public String picture;
+    public String picturePath;
 
     public long unixTimeStamp;
 
+
     @Override
     public LatLng getPosition() {
-        return new LatLng(latitude, longtitude);
+        return new LatLng(latitude, longitude);
     }
 
     @Override
@@ -31,4 +32,5 @@ public class Pothole implements Serializable, ClusterItem {
     public String getSnippet() {
         return "";
     }
+
 }
