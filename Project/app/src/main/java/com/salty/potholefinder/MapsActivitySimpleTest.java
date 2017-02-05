@@ -99,7 +99,7 @@ public class MapsActivitySimpleTest extends FragmentActivity implements OnMapRea
         }
     }
 
-    private void configureGPS(){
+    private void configureGPS() {
         locationManager.requestLocationUpdates("gps", 10000, 0, locationListener);
     }
 }
