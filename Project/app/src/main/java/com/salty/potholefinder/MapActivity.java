@@ -59,7 +59,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private LocationManager locationManager;
     private ClusterManager<Pothole> mClusterManager;
     private GoogleApiClient googleApiClient;
-    private String mCurrentPhotoPath;
     private FloatingActionButton fab;
     private boolean fabMenuIsOpen = false;
 
@@ -169,16 +168,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-
-            Pothole pothole = new PotholeBuilder()
-                    .withPotholeID(UUID.randomUUID().toString())
-                    .withLatitude(lastLocation.getLatitude())
-                    .withLongitude(lastLocation.getLongitude())
-                    .withPicturePath(mCurrentPicturePath)
-                    .withUnixTimeStamp(new Date().getTime())
-                    .createPothole();
-            potHoleRepo.save(pothole.potholeID, pothole);
-
+            createAndSavePotholeLastLocation();
             addEffects();
             //Gets the bitmap and display in a ImageView
             //Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPicturePath);
@@ -195,6 +185,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             @Override
             public void onMapClick(LatLng latLng) {
                 createAndSavePothole(latLng);
+                addEffects();
             }
         });
 
@@ -301,38 +292,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
-    //creates a file with a valid path that will then be used if
-    //the camera returns an image
-    private File createImageFile() throws IOException {
-        // Create an image file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
-        );
-
-        // Save a file: path for use with ACTION_VIEW intents
-        mCurrentPicturePath = image.getAbsolutePath();
-        return image;
-    }
-
-    private void addRandomPothole(List<Pothole> potholes, double latitude, double longitude){
-
-
-        potholes.add(new PotholeBuilder()
-                .withPotholeID(UUID.randomUUID().toString())
-                .withLatittude(latitude)
-                .withLongitude(longitude)
-                .withPicturePath("")
-                .withUnixTimeStamp(new Date().getTime())
-                .createPothole());
-    }
-
-
-
     //Use this to open the camera app and take a picturePath
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -386,6 +345,24 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         Log.d("shit", v.toString());
     }
 
+    //creates a file with a valid path that will then be used if
+    //the camera returns an image
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        mCurrentPicturePath = image.getAbsolutePath();
+        return image;
+    }
+
     private void createAndSavePothole(LatLng latLng){
         String uuid = UUID.randomUUID().toString();
         potHoleRepo.save(uuid, new PotholeBuilder()
@@ -395,7 +372,27 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 .withPicturePath("")
                 .withUnixTimeStamp(new Date().getTime())
                 .createPothole());
-        addEffects();
+    }
+
+    private void createAndSavePotholeLastLocation(){
+        String uuid = UUID.randomUUID().toString();
+        potHoleRepo.save(uuid, new PotholeBuilder()
+                .withPotholeID(uuid)
+                .withLatitude(lastLocation.getLatitude())
+                .withLongitude(lastLocation.getLongitude())
+                .withPicturePath(mCurrentPicturePath)
+                .withUnixTimeStamp(new Date().getTime())
+                .createPothole());
+    }
+
+    private void addRandomPothole(List<Pothole> potholes, double latitude, double longitude){
+        potholes.add(new PotholeBuilder()
+                .withPotholeID(UUID.randomUUID().toString())
+                .withLatitude(latitude)
+                .withLongitude(longitude)
+                .withPicturePath("")
+                .withUnixTimeStamp(new Date().getTime())
+                .createPothole());
     }
 
     private void addRandomPothole(List<Pothole> potholes){
