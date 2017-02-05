@@ -179,6 +179,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     .createPothole();
             potHoleRepo.save(pothole.potholeID, pothole);
 
+            addEffects();
             //Gets the bitmap and display in a ImageView
             //Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPicturePath);
             //ImageView mImageView = (ImageView)findViewById(R.id.activity_camera_imageview);
@@ -189,6 +190,21 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(final GoogleMap googleMap) {
         mMap = googleMap;
+
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                String uuid = UUID.randomUUID().toString();
+                potHoleRepo.save(uuid, new PotholeBuilder()
+                        .withPotholeID(uuid)
+                        .withLatittude(latLng.latitude)
+                        .withLongitude(latLng.longitude)
+                        .withPicturePath("")
+                        .withUnixTimeStamp(new Date().getTime())
+                        .createPothole());
+                addEffects();
+            }
+        });
 
         try {
             mMap.setMyLocationEnabled(true);
