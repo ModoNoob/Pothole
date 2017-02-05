@@ -238,16 +238,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-//            try {
-//                if (ActivityCompat.checkSelfPermission(MapActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-//                        ActivityCompat.checkSelfPermission(MapActivity.this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//                    requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.INTERNET}, 10);
-//                }
-//                lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
-//            } catch (SecurityException e) {
-//                e.printStackTrace();
-//            }
-
             if(Globals.isDataInsertCameraActive){
                 createAndSavePothole(currentLatLnt, mCurrentPicturePath);
             }
