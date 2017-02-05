@@ -122,7 +122,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                         mMap.animateCamera(CameraUpdateFactory.zoomTo(15f), 1000, null);
                     mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude())), 1000, null);
                     createAndSavePothole(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()));
-                    addEffects();
+                    addEffects(false);
                 }
 
                 Toast.makeText(getApplicationContext(), "Current position: " + lastLocation.getLatitude() + ", " + lastLocation.getLongitude(), Toast.LENGTH_SHORT).show();
@@ -163,12 +163,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             case R.id.action_heatmap:
                 Globals.isHeatMapActive = !Globals.isHeatMapActive;
                 item.setChecked(Globals.isHeatMapActive);
-                addEffects();
+                addEffects(true);
                 return true;
             case R.id.action_cluster:
                 Globals.isClusterActive = !Globals.isClusterActive;
                 item.setChecked(Globals.isClusterActive);
-                addEffects();
+                addEffects(true);
                 return true;
             case R.id.data_insert:
                 Globals.isDataInsertActive = !Globals.isDataInsertActive;
@@ -190,7 +190,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                addEffects();
+                addEffects(true);
                 return true;
 
             default:
@@ -246,7 +246,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             else{
                 createAndSavePotholeLastLocationWithPicture();
             }
-            addEffects();
+            addEffects(false);
             //Gets the bitmap and display in a ImageView
             //Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPicturePath);
             //ImageView mImageView = (ImageView)findViewById(R.id.activity_camera_imageview);
@@ -264,12 +264,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 if (Globals.isDataInsertActive)
                 {
                     createAndSavePothole(latLng, "");
-                    addEffects();
+                    addEffects(false);
                 }
                 else if(Globals.isDataInsertCameraActive){
                     mCurrentLatLng = latLng;
                     dispatchTakePictureIntent();
-                    addEffects();
+                    addEffects(false);
                 }
             }
         });
@@ -280,7 +280,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             e.printStackTrace();
         }
 
-        addEffects();
+        addEffects(false);
 
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
         ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -304,8 +304,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
-    private void addEffects() {
-        mMap.clear();
+    private void addEffects(boolean clearMap) {
+        if(clearMap){
+            mMap.clear();
+        }
 
         // (Activity extends context, so we can pass 'this' in the constructor.)
         mClusterManager = new ClusterManager<Pothole>(this, mMap);
@@ -328,7 +330,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             @Override
             public boolean onClusterItemClick(Pothole item) {
 
-                if (item.picturePath == "")
+                if (item.picturePath.equals(""))
                     return false;
                 LayoutInflater inflater = getLayoutInflater();
                 View imageDialog = inflater.inflate(R.layout.dialog_image, null);
@@ -541,8 +543,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         potholes.add(addPothole(45.516248, -73.490295));
         potholes.add(addPothole(45.521330, -73.504951));
     }
-
-
 
     private void createAndSavePothole(LatLng latLng, String path){
         String uuid = UUID.randomUUID().toString();
