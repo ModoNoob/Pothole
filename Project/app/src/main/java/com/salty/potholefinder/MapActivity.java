@@ -371,6 +371,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         }
 
+        mClusterManager.cluster();
+
         if (list.size() == 0)
             return;
 
