@@ -210,7 +210,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 try{
                     mClusterManager.addItem((Pothole)pothole);
                     LatLng current = ((Pothole)pothole).getPosition();
-                    mMap.addMarker(new MarkerOptions().position(current));
+                    //mMap.addMarker(new MarkerOptions().position(current));
                     list.add(current);
                 }catch(Exception e){
                     Log.e("ERROR", e.toString());
