@@ -17,4 +17,9 @@
         android:orderInCategory="100"
         android:title="Data Insert"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/clear_data"
+        android:orderInCategory="100"
+        android:title="Clear Data"
+        app:showAsAction="never" />
 </menu>

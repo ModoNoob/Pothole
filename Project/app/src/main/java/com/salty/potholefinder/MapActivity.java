@@ -144,6 +144,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             case R.id.data_insert:
                 isDataInsertActive = !isDataInsertActive;
                 return true;
+            case R.id.clear_data:
+                potHoleRepo.deleteAll();
+                addEffects();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
