@@ -20,6 +20,9 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.TileOverlayOptions;
+import com.google.maps.android.clustering.ClusterManager;
+import com.google.maps.android.heatmaps.HeatmapTileProvider;
 import com.salty.potholefinder.data.FileSystemRepository;
 import com.salty.potholefinder.model.Pothole;
 
@@ -31,6 +34,7 @@ public class MapFragment extends FragmentActivity implements OnMapReadyCallback 
     private GoogleMap mMap;
     private LocationManager locationManager;
     private LocationListener locationListener;
+    private ClusterManager<Pothole> mClusterManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,12 +70,7 @@ public class MapFragment extends FragmentActivity implements OnMapReadyCallback 
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        FileSystemRepository<Pothole> repo = new FileSystemRepository<>(getApplicationContext());
-
-        for (Pothole pothole : repo.getAll()) {
-            LatLng current = new LatLng(pothole.latitude, pothole.longtitude);
-            mMap.addMarker(new MarkerOptions().position(current));
-        }
+        addEffects();
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LocationListener() {
@@ -112,5 +111,35 @@ public class MapFragment extends FragmentActivity implements OnMapReadyCallback 
 
     private void configureGPS() {
         locationManager.requestLocationUpdates("gps", 10000, 0, locationListener);
+    }
+
+    private void addEffects() {
+
+        // Initialize the manager with the context and the map.
+        // (Activity extends context, so we can pass 'this' in the constructor.)
+        mClusterManager = new ClusterManager<Pothole>(this, mMap);
+
+        // Point the map's listeners at the listeners implemented by the cluster
+        // manager.
+        mMap.setOnCameraIdleListener(mClusterManager);
+        mMap.setOnMarkerClickListener(mClusterManager);
+
+        FileSystemRepository<Pothole> repo = new FileSystemRepository<>(getApplicationContext());
+
+        List<LatLng> list = new ArrayList<>();
+
+        for (Pothole pothole : repo.getAll()) {
+            mClusterManager.addItem(pothole);
+            LatLng current = pothole.getPosition();
+            mMap.addMarker(new MarkerOptions().position(current));
+            list.add(current);
+        }
+
+        // Create a heat map tile provider, passing it the latlngs of the police stations.
+        HeatmapTileProvider mProvider = new HeatmapTileProvider.Builder()
+                .data(list)
+                .build();
+        // Add a tile overlay to the map, using the heat map tile provider.
+        mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider));
     }
 }
