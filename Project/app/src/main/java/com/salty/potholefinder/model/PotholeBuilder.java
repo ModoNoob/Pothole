@@ -1,6 +1,4 @@
-package com.salty.potholefinder;
-
-import com.salty.potholefinder.model.Pothole;
+package com.salty.potholefinder.model;
 
 public class PotholeBuilder {
     private String potholeID;

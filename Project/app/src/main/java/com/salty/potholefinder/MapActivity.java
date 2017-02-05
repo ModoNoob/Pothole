@@ -1,36 +1,32 @@
 package com.salty.potholefinder;
 
-import android.*;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.graphics.Matrix;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Toast;
 import android.util.Log;
-import android.widget.ImageView;
-import android.util.Log;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
@@ -40,6 +36,7 @@ import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.heatmaps.HeatmapTileProvider;
 import com.salty.potholefinder.data.FileSystemRepository;
 import com.salty.potholefinder.model.Pothole;
+import com.salty.potholefinder.model.PotholeBuilder;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,7 +47,7 @@ import java.util.Random;
 import java.util.List;
 import java.util.UUID;
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
     static final int REQUEST_TAKE_PHOTO = 1;
@@ -60,10 +57,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private LocationManager locationManager;
     private LocationListener locationListener;
     private ClusterManager<Pothole> mClusterManager;
-
+    private GoogleApiClient googleApiClient;
     private String mCurrentPhotoPath;
 
     private FileSystemRepository<Pothole> potHoleRepo;
+
+    private Location lastLocation;
+    private LocationClient
 
     Random r = new Random();
 
@@ -71,6 +71,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+
+        if (googleApiClient == null) {
+            googleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+        }
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map_fragment);
         mapFragment.getMapAsync(this);
@@ -92,6 +100,38 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+
+        if (lastLocation != null) {
+            mMap.moveCamera(CameraUpdateFactory.zoomTo(16.5f));
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude())));
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    protected void onStart() {
+        googleApiClient.connect();
+        super.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        googleApiClient.disconnect();
+        super.onStop();
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.e("Google Play API", "Could not connect to the Google Play API");
     }
 
     @Override
@@ -126,7 +166,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
+    public void onMapReady(final GoogleMap googleMap) {
         mMap = googleMap;
 
         addEffects();
@@ -135,29 +175,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         Log.d("Location", "Ici dans le onMapReady");
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LocationListener() {
-
             @Override
             public void onLocationChanged(Location location) {
                 Log.d("Location", "Ici dans le onLocationChanged");
                 LatLng current = new LatLng(location.getLatitude(), location.getLongitude());
                 mMap.addMarker(new MarkerOptions().position(current).title("Current Location"));
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(current));
-            }
-
-            @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-
-            }
-
-            @Override
-            public void onProviderEnabled(String provider) {
-
-            }
-
-            @Override
-            public void onProviderDisabled(String provider) {
-                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                startActivity(intent);
             }
         };
 
@@ -175,7 +198,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private void configureGPS() {
         try {
             Log.d("Location", "It changed");
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10, 0.1f, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0.1f, locationListener);
         } catch(SecurityException e) {
             e.printStackTrace();
         }
@@ -287,4 +310,5 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private double randomDouble(double min, double max){
         return min + (max - min) * r.nextDouble();
     }
+
 }
