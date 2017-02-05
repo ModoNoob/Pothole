@@ -74,6 +74,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private Location lastLocation;
 
+    private LatLng currentLatLnt;
+
     Random r = new Random();
 
     @Override
@@ -236,18 +238,18 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            try {
-                if (ActivityCompat.checkSelfPermission(MapActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                        ActivityCompat.checkSelfPermission(MapActivity.this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.INTERNET}, 10);
-                }
-                lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
-            } catch (SecurityException e) {
-                e.printStackTrace();
-            }
+//            try {
+//                if (ActivityCompat.checkSelfPermission(MapActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+//                        ActivityCompat.checkSelfPermission(MapActivity.this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//                    requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.INTERNET}, 10);
+//                }
+//                lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+//            } catch (SecurityException e) {
+//                e.printStackTrace();
+//            }
 
             if(Globals.isDataInsertCameraActive){
-                createAndSavePothole(Globals.currentLatLnt, mCurrentPicturePath);
+                createAndSavePothole(currentLatLnt, mCurrentPicturePath);
             }
             else if(Globals.isDataInsertActive){
                 createAndSavePotholeLastLocationWithoutPicture();
@@ -273,7 +275,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     addEffects(false);
                 }
                 else if(Globals.isDataInsertCameraActive){
-                    Globals.currentLatLnt = latLng;
+                    currentLatLnt = latLng;
                     dispatchTakePictureIntent();
                     addEffects(false);
                 }
