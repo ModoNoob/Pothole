@@ -63,7 +63,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private FileSystemRepository<Pothole> potHoleRepo;
 
     private Location lastLocation;
-    private LocationClient
 
     Random r = new Random();
 
@@ -104,7 +103,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+        //lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
 
         if (lastLocation != null) {
             mMap.moveCamera(CameraUpdateFactory.zoomTo(16.5f));
@@ -198,7 +197,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private void configureGPS() {
         try {
             Log.d("Location", "It changed");
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0.1f, locationListener);
+            //locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0.1f, locationListener);
         } catch(SecurityException e) {
             e.printStackTrace();
         }
@@ -220,12 +219,21 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         List<LatLng> list = new ArrayList<>();
 
-        for (Pothole pothole : repo.getAll()) {
+        List<Pothole> potholes = repo.getAll();
+        for (int i = 0; i < 1000; i++){
+            AddRandomPothole(potholes);
+        }
+
+        for (Object pothole : potholes) {
             if (pothole != null) {
-                mClusterManager.addItem(pothole);
-                LatLng current = pothole.getPosition();
-                mMap.addMarker(new MarkerOptions().position(current));
-                list.add(current);
+                try{
+                    mClusterManager.addItem((Pothole)pothole);
+                    LatLng current = ((Pothole)pothole).getPosition();
+                    mMap.addMarker(new MarkerOptions().position(current));
+                    list.add(current);
+                }catch(Exception e){
+                    Log.e("ERROR", e.toString());
+                }
             }
         }
 
@@ -285,7 +293,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         Toast.makeText(this, "WOW", Toast.LENGTH_LONG).show();
     }
 
-    private void AddRandomPothole(ArrayList<Pothole> potholes){
+    private void AddRandomPothole(List<Pothole> potholes){
         potholes.add(new PotholeBuilder()
                 .withPotholeID(UUID.randomUUID().toString())
                 .withLatittude(randomLatitude())
