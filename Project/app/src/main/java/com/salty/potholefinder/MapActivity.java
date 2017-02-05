@@ -235,9 +235,15 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         List<LatLng> list = new ArrayList<>();
 
+        SimplexNoise simplexNoise = new SimplexNoise(100,0.1,5000);
+        simplexNoise.seed = 1234567890;
+
         List<Pothole> potholes = repo.getAll();
-        for (int i = 0; i < 1000; i++){
-            addRandomPothole(potholes);
+        for (int i = 45, x = 0; i < 46; i+=0.0005, x++){
+            for (int j = 0, y = 0; j < 100; j+=0.0005, y++){
+                if(simplexNoise.getNoise(x, y) > 0.75)
+                    addRandomPothole(potholes, i, j);
+            }
         }
 
         for (Object pothole : potholes) {
@@ -305,11 +311,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         return image;
     }
 
-    private void addRandomPothole(List<Pothole> potholes){
+    private void addRandomPothole(List<Pothole> potholes, double latitude, double longitude){
+
+
         potholes.add(new PotholeBuilder()
                 .withPotholeID(UUID.randomUUID().toString())
-                .withLatittude(randomLatitude())
-                .withLongitude(randomLongitude())
+                .withLatittude(latitude)
+                .withLongitude(longitude)
                 .withPicturePath("")
                 .withUnixTimeStamp(new Date().getTime())
                 .createPothole());
