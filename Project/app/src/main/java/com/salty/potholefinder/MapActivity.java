@@ -127,17 +127,23 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
-
-        /*MenuItem dataInsertMenu = (MenuItem)this.findViewById(R.id.data_insert);
-        dataInsertMenu.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                Log.d("shit", "WOW");
-                return false;
-            }
-        });*/
-
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.action_heatmap:
+                break;
+            case R.id.action_cluster:
+                break;
+            case R.id.data_insert:
+
+                break;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
