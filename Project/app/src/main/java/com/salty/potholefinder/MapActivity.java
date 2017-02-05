@@ -1,19 +1,16 @@
 package com.salty.potholefinder;
 
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -21,7 +18,6 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -210,6 +206,17 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        if (fabMenuIsOpen){
+            fabOnClick(this.findViewById(R.id.fab));
+        }
+        else
+        {
+            moveTaskToBack(true);
+        }
+    }
+
     private void addEffects() {
 
         // Initialize the manager with the context and the map.
@@ -227,7 +234,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         List<Pothole> potholes = repo.getAll();
         for (int i = 0; i < 1000; i++){
-            AddRandomPothole(potholes);
+            addRandomPothole(potholes);
         }
 
         for (Object pothole : potholes) {
@@ -295,7 +302,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         return image;
     }
 
-    private void AddRandomPothole(List<Pothole> potholes){
+    private void addRandomPothole(List<Pothole> potholes){
         potholes.add(new PotholeBuilder()
                 .withPotholeID(UUID.randomUUID().toString())
                 .withLatittude(randomLatitude())
