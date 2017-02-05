@@ -35,7 +35,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
-import com.google.maps.android.clustering.view.ClusterRenderer;
 import com.google.maps.android.heatmaps.HeatmapTileProvider;
 import com.salty.potholefinder.data.FileSystemRepository;
 import com.salty.potholefinder.model.Pothole;
@@ -50,7 +49,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
@@ -64,6 +62,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private GoogleApiClient googleApiClient;
     private FloatingActionButton fab;
     private boolean fabMenuIsOpen = false;
+    private LatLng mCurrentLatLng;
+
+    private Menu mMenu;
 
     private ClusterManager<Pothole> mClusterManager;
 
@@ -137,9 +138,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
 
+        mMenu = menu;
+
         menu.findItem(R.id.action_heatmap).setChecked(Globals.isHeatMapActive);
         menu.findItem(R.id.action_cluster).setChecked(Globals.isClusterActive);
         menu.findItem(R.id.data_insert).setChecked(Globals.isDataInsertActive);
+        menu.findItem(R.id.data_insert_photo).setChecked(Globals.isDataInsertCameraActive);
 
         return true;
     }
@@ -160,7 +164,15 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 return true;
             case R.id.data_insert:
                 Globals.isDataInsertActive = !Globals.isDataInsertActive;
+                Globals.isDataInsertCameraActive = false;
+                mMenu.findItem(R.id.data_insert_photo).setChecked(Globals.isDataInsertCameraActive);
                 item.setChecked(Globals.isDataInsertActive);
+                return true;
+            case R.id.data_insert_photo:
+                Globals.isDataInsertCameraActive = !Globals.isDataInsertCameraActive;
+                Globals.isDataInsertActive = false;
+                mMenu.findItem(R.id.data_insert).setChecked(Globals.isDataInsertActive);
+                item.setChecked(Globals.isDataInsertCameraActive);
                 return true;
             case R.id.clear_data:
                 potHoleRepo.deleteAll();
@@ -172,6 +184,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 }
                 addEffects();
                 return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -216,7 +229,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            createAndSavePotholeLastLocation();
+            if(Globals.isDataInsertCameraActive){
+                createAndSavePothole(mCurrentLatLng, mCurrentPicturePath);
+            }
+            else if(Globals.isDataInsertActive){
+                createAndSavePotholeLastLocationWithPicture();
+            }
             addEffects();
             //Gets the bitmap and display in a ImageView
             //Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPicturePath);
@@ -235,6 +253,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 if (Globals.isDataInsertActive)
                 {
                     createAndSavePothole(latLng);
+                    addEffects();
+                }
+                else if(Globals.isDataInsertCameraActive){
+                    mCurrentLatLng = latLng;
+                    dispatchTakePictureIntent();
                     addEffects();
                 }
             }
@@ -425,30 +448,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         return image;
     }
 
-    void DeleteRecursive(File dir)
-    {
-        Log.d("DeleteRecursive", "DELETEPREVIOUS TOP" + dir.getPath());
-        if (dir.isDirectory())
-        {
-            String[] children = dir.list();
-            for (String aChildren : children) {
-                File temp = new File(dir, aChildren);
-                if (temp.isDirectory()) {
-                    Log.d("DeleteRecursive", "Recursive Call" + temp.getPath());
-                    DeleteRecursive(temp);
-                } else {
-                    Log.d("DeleteRecursive", "Delete File" + temp.getPath());
-                    boolean b = temp.delete();
-                    if (!b) {
-                        Log.d("DeleteRecursive", "DELETE FAIL");
-                    }
-                }
-            }
-
-        }
-        dir.delete();
-    }
-
     private void mockPothole(List<Pothole> potholes)
     {
         potholes.add(addPothole(45.480702, -73.695810));
@@ -516,15 +515,26 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         potholes.add(addPothole(45.521330, -73.504951));
     }
 
-    private void createAndSavePothole(LatLng latLng){
+
+
+    private void createAndSavePothole(LatLng latLng, String path){
         String uuid = UUID.randomUUID().toString();
         potHoleRepo.save(uuid, new PotholeBuilder()
                 .withPotholeID(uuid)
                 .withLatitude(latLng.latitude)
                 .withLongitude(latLng.longitude)
-                .withPicturePath("")
+                .withPicturePath(path)
                 .withUnixTimeStamp(new Date().getTime())
                 .createPothole());
+    }
+
+    private void createAndSavePothole(LatLng latLng){
+        createAndSavePothole(latLng, "");
+    }
+
+    private void createAndSavePotholeLastLocationWithPicture(){
+        LatLng latLng = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
+        createAndSavePothole(latLng, mCurrentPicturePath);
     }
 
     private Pothole addPothole(double latitude, double longitude){
@@ -535,17 +545,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 .withPicturePath("")
                 .withUnixTimeStamp(new Date().getTime())
                 .createPothole();
-    }
-
-    private void createAndSavePotholeLastLocation(){
-        String uuid = UUID.randomUUID().toString();
-        potHoleRepo.save(uuid, new PotholeBuilder()
-                .withPotholeID(uuid)
-                .withLatitude(lastLocation.getLatitude())
-                .withLongitude(lastLocation.getLongitude())
-                .withPicturePath(mCurrentPicturePath)
-                .withUnixTimeStamp(new Date().getTime())
-                .createPothole());
     }
 
     private void addPotholeAtLocation(List<Pothole> potholes, double latitude, double longitude){

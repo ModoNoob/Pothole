@@ -10,4 +10,6 @@ public class Globals {
     static boolean isClusterActive = true;
     static boolean isDataInsertActive = false;
     static boolean isFirstConnection = true;
+    static boolean isDataInsertCameraActive = false;
+
 }

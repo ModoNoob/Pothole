@@ -21,6 +21,12 @@
         android:title="Data Insert"
         app:showAsAction="never" />
     <item
+        android:id="@+id/data_insert_photo"
+        android:checkable="true"
+        android:orderInCategory="100"
+        android:title="Data Insert with picture"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/clear_data"
         android:orderInCategory="100"
         android:title="Clear Data"
