@@ -33,6 +33,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.TileOverlayOptions;
+import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.heatmaps.HeatmapTileProvider;
 import com.salty.potholefinder.data.FileSystemRepository;
@@ -277,6 +278,22 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         // manager.
         mMap.setOnCameraIdleListener(mClusterManager);
         mMap.setOnMarkerClickListener(mClusterManager);
+
+        mClusterManager.setOnClusterClickListener(new ClusterManager.OnClusterClickListener<Pothole>() {
+            @Override
+            public boolean onClusterClick(Cluster<Pothole> cluster) {
+                Log.d("shit", "cluster is clicked");
+                return false;
+            }
+        });
+
+        mClusterManager.setOnClusterItemClickListener(new ClusterManager.OnClusterItemClickListener<Pothole>() {
+            @Override
+            public boolean onClusterItemClick(Pothole item) {
+                Log.d("shit", Double.toString(item.latitude));
+                return false;
+            }
+        });
 
         FileSystemRepository<Pothole> repo = new FileSystemRepository<>(getApplicationContext());
 
