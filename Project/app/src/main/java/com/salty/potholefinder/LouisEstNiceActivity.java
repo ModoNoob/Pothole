@@ -5,12 +5,14 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.salty.potholefinder.data.FileSystemRepository;
+import com.salty.potholefinder.model.Pothole;
 
+import java.util.Date;
 import java.util.UUID;
 
 public class LouisEstNiceActivity extends AppCompatActivity {
 
-    private FileSystemRepository<String> repository = null;
+    private FileSystemRepository<Pothole> repository = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,10 +23,26 @@ public class LouisEstNiceActivity extends AppCompatActivity {
 
         String uuid = UUID.randomUUID().toString();
 
-        Log.d("FileSystemRepository", "Saving file...");
-        repository.save(uuid, "Hello!");
+        //repository.deleteAll();
 
-        String savedStuff = repository.get(uuid);
-        Log.d("FileSystemRepository", "Reading file... " + savedStuff);
+        Pothole p = new Pothole();
+        p.longtitude = 45.5037537d;
+        p.latitude = -73.6150756d;
+        p.picture = "charles pls";
+        p.potholeID = uuid;
+        p.unixTimeStamp = new Date().getTime();
+
+        repository.save(uuid, p);
+        Log.d("FileSystemRepository", "Saving file...");
+
+        Pothole pothole = repository.get(uuid);
+        Log.d("FileSystemRepository", "Reading file... " + pothole.potholeID);
+
+        //repository.delete(uuid);
+        Log.d("FileSystemRepository", "Deleting file...");
+
+        for(Pothole pot : repository.getAll())
+            if (pot != null)
+                Log.d("FileSystemRepository", pot.potholeID);
     }
 }

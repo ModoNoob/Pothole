@@ -3,4 +3,7 @@
     <string name="title_activity_my_scene_unityandroidcharles">MySceneUNITYANDROIDCHARLESActivity</string>
     <string name="title_activity_maps_simple_test">Map</string>
     <string name="takePicture">take picture</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

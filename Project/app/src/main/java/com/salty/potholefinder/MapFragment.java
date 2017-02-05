@@ -1,6 +1,5 @@
 package com.salty.potholefinder;
 
-import android.*;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -22,9 +21,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.util.jar.*;
-
-public class MapsActivitySimpleTest extends FragmentActivity implements OnMapReadyCallback {
+public class MapFragment extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private LocationManager locationManager;
@@ -33,7 +30,7 @@ public class MapsActivitySimpleTest extends FragmentActivity implements OnMapRea
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maps_simple_test);
+        setContentView(R.layout.fragment_maps);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -101,7 +98,7 @@ public class MapsActivitySimpleTest extends FragmentActivity implements OnMapRea
         }
     }
 
-    private void configureGPS(){
+    private void configureGPS() {
         locationManager.requestLocationUpdates("gps", 10000, 0, locationListener);
     }
 }
